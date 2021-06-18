@@ -60,13 +60,5 @@ export function getSortedPostsData() {
     }
   })
   // Sort posts by date
-  return allPostsData.sort(({ date : a }, { date: b }) => {
-    if (a < b) {
-      return 1
-    } else if (a > b) {
-      return -1
-    } else {
-      return 0
-    }
-  })
+  return allPostsData;
 }
