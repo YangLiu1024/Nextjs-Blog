@@ -37,6 +37,10 @@ export async function getPostData(id) {
     } 
 } 
 
+export function getPostAlias() {
+  return ['sg-ssr1', 'sg-ssr2'];
+}
+
 export function getAllPostId() {
     const fileNames = fs.readdirSync(postsDirectory)
 

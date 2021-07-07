@@ -5,6 +5,7 @@ import Layout, { siteTitle } from '../components/layout'
 import utilStyles from '../styles/common.module.css'
 import { getSortedPostsData } from '../utils/posts'
 import { GetStaticProps } from 'next'
+import { useRouter } from 'next/router';
 
 export default function Home({allPosts, env}: {allPosts: {
   date: string,
@@ -14,6 +15,7 @@ export default function Home({allPosts, env}: {allPosts: {
   title: string,
   mode: string
 }}) {
+  const router = useRouter()
   return (
     <Layout home>
       <Head>
@@ -28,6 +30,7 @@ export default function Home({allPosts, env}: {allPosts: {
           (This is a sample website - you’ll be building a site like this on{' '}
           <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
         </p>
+        <p><button onClick={() => router.push({pathname: "/visitor", query: {name: "yang"}}, "/visitor-yang")}>Go to Visitor </button></p>
       </section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>

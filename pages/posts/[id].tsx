@@ -1,10 +1,10 @@
 import Layout from '../../components/layout'
-import { getAllPostId, getPostData } from '../../utils/posts'
+import { getAllPostId, getPostData, getPostAlias } from '../../utils/posts'
 import Head from 'next/head'
 import Date from '../../components/date'
 import utilStyles from '../../styles/common.module.css'
 import { GetStaticProps, GetStaticPaths } from 'next'
-import { useRouter } from 'next/dist/client/router';
+import { useRouter } from 'next/router';
 
 export default function Post({postData}: {postData: {
   title: string,
@@ -13,9 +13,13 @@ export default function Post({postData}: {postData: {
 }}) {
   const router = useRouter()
   //when user input the path which not include by getStaticPaths, and fallback is true
-  //nextjs will render this page with empty postData first, and router.isFallback will return true
+  //nextjs will render this page with empty postData first, and router.isFallback will return true, router.query will be empty
   //when getStaticProps is resolved, nextjs will render this page again.
-  console.log('render post')
+
+  //for the path in getStaticPaths, it will be {id: "pre-rendering"}, /post/[id], /post/pre-rendering
+  //for the path not in getStaticPaths, the fallback version will be {}, /post/[id],/post/[id]
+  //                                    the updated version willbe {id: "abc", name: "yang"},/post/[id],/post/abc?name=yang
+  console.log('render post', router.query, router.pathname, router.asPath) 
   if (router.isFallback) {
     return <div>Loading...</div>
   }
@@ -43,6 +47,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params })  => {
     console.log('query post data for ', params.id)
+    if (getPostAlias().includes(params.id as string)) {
+      console.log('redirect')
+      return {
+        redirect: {destination: "/posts/sg-ssr", permanent: false}
+      }
+    }
     const postData = await getPostData(params.id as string)
     return {
       props: {

@@ -1,14 +1,17 @@
 import Layout from '../components/layout'
 import utilStyles from '../styles/common.module.css'
+import { useRouter } from 'next/router'
 
-export default function Visitor({query}) {
+export default function Visitor() {
+    const router = useRouter()
+    console.log('visitor', router.pathname, router.query, router.asPath)
     return (
         <Layout home={false}>
             <section className={utilStyles.headingMd}>
                 <p>Hi visitor</p>
                 <ul className={utilStyles.list}>
                 {
-                    Object.entries(query).map(([key, value]) => (
+                    Object.entries(router.query).map(([key, value]) => (
                         <li className={utilStyles.listItem} key={key}>
                             {key} = {value}
                         </li>
@@ -20,11 +23,11 @@ export default function Visitor({query}) {
     )
 }
 
-export async function getServerSideProps(context) {
-    const query = context.query
-    return {
-        props: {
-            query
-        }
-    }
-}
+// export async function getServerSideProps(context) {
+//     const query = context.query
+//     return {
+//         props: {
+//             query
+//         }
+//     }
+// }
