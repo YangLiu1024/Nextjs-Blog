@@ -46,14 +46,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params })  => {
-    console.log('query post data for ', params.id)
-    if (getPostAlias().includes(params.id as string)) {
+    const alias = getPostAlias()
+    let id = params.id as string;
+    if (alias.has(id)) {
       console.log('redirect')
       return {
-        redirect: {destination: "/posts/sg-ssr", permanent: false}
+        redirect: {destination: `${alias.get(id)}`, permanent: false}
       }
     }
-    const postData = await getPostData(params.id as string)
+    console.log('query post data for ', id)
+    const postData = await getPostData(id)
     return {
       props: {
         postData
