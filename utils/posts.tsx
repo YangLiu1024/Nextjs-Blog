@@ -3,11 +3,12 @@ import path from 'path'
 import matter from 'gray-matter'
 import remark from 'remark'
 import html from 'remark-html'
+import getConfig from 'next/config'
 
-const postsDirectory = path.join(process.cwd(), 'public', 'posts')
+const postsDirectory = path.join(getConfig().serverRuntimeConfig.PROJECT_ROOT, 'public', 'posts')
 
 export async function getPostData(id) {
-    console.log('current project path: ', process.cwd())
+    console.log('current project path: ', postsDirectory)
     const fullPath = path.join(postsDirectory, `${id}.md`)
     if (!fs.existsSync(fullPath)) {
       setTimeout(() =>{}, 2000)
