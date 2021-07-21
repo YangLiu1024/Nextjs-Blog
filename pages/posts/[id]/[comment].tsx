@@ -13,12 +13,12 @@ export const getServerSideProps = async ({params}) => {
     const id = params.id
     const commentId = params.comment
     const content = await fetch(`http://localhost:3000/api/posts/${id}/${commentId}`)
-    const text = await content.text()
+    const text = await content.json()
 
     return {
         props: {
             title: id,
-            comment: text
+            comment: text.data
         }
     }
 }
