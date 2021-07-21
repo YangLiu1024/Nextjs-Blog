@@ -1,4 +1,3 @@
-import { getPostData } from "../../../utils/posts"
 
 export default function Comment({comment, title}) {
     return (
