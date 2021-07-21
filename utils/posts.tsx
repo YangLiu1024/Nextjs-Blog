@@ -7,6 +7,7 @@ import html from 'remark-html'
 const postsDirectory = path.join(process.cwd(), 'posts')
 
 export async function getPostData(id) {
+    console.log('current project path: ', process.cwd())
     const fullPath = path.join(postsDirectory, `${id}.md`)
     if (!fs.existsSync(fullPath)) {
       setTimeout(() =>{}, 2000)

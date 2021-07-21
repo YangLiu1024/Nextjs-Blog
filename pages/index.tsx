@@ -25,7 +25,7 @@ export default function Home({allPosts, env}: {allPosts: {
         <p>I am Yang, and hello to everyone</p>
         <p>{process.env.NEXT_PUBLIC_ENVIRONMENT}</p>
         <p>{env.title} + {env.mode}</p>
-        <p>{new Date().toTimeString()}</p>
+        <p>Time: {new Date().toLocaleString()}</p>
         <p>
           (This is a sample website - you’ll be building a site like this on{' '}
           <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
