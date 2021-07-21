@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 
 export default function Visitor() {
     const router = useRouter()
-    console.log('visitor', router.pathname, router.query, router.asPath)
+    console.log('visitor', router.isFallback, router.isReady, router.pathname, router.query, router.asPath)
     return (
         <Layout home={false}>
             <section className={utilStyles.headingMd}>

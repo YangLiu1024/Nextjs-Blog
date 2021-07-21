@@ -10,7 +10,6 @@ const postsDirectory = path.join(process.cwd(), 'posts')
 export async function getPostData(id) {
     const fullPath = path.join(postsDirectory, `${id}.md`)
     if (!fs.existsSync(fullPath)) {
-      setTimeout(() =>{}, 2000)
       return {
         id,
         contentHtml: `<p>${id} is rendered by server at real time</p>`,

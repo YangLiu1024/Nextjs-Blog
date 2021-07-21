@@ -11,11 +11,15 @@ export default function Comment({comment, title}) {
 
 export const getServerSideProps = async ({params}) => {
     console.log('get server side props for comment', params)
-    const data = await getPostData(params.id as string)
+    const id = params.id
+    const commentId = params.comment
+    const content = await fetch(`http://localhost:3000/api/posts/${id}/${commentId}`)
+    const text = await content.text()
+
     return {
         props: {
-            title: data.title,
-            comment: 'comment:' + params.comment
+            title: id,
+            comment: text
         }
     }
 }

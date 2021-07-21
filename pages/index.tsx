@@ -16,6 +16,7 @@ export default function Home({allPosts, env}: {allPosts: {
   mode: string
 }}) {
   const router = useRouter()
+  console.log('home page', router.asPath, router.isReady)
   return (
     <Layout home>
       <Head>
@@ -23,8 +24,17 @@ export default function Home({allPosts, env}: {allPosts: {
       </Head>
       <section className={utilStyles.headingMd}>
         <p>I am Yang, and hello to everyone</p>
-        <p>{process.env.NEXT_PUBLIC_ENVIRONMENT}</p>
-        <p>{env.title} + {env.mode}</p>
+        <p>Client Side could access public enviroment directly, such as {process.env.NEXT_PUBLIC_ENVIRONMENT}</p>
+        <p>data fetching method could access all environments, add pass to Component as props, such as</p>
+        <ul className={utilStyles.list}>
+          {
+            Object.keys(env).map(key => (
+              <li className={utilStyles.listItem} key={key}>
+                {key}: {env[key]}
+              </li>
+            ))
+          }
+        </ul>
         <p>Time: {new Date().toLocaleString()}</p>
         <p>
           (This is a sample website - you’ll be building a site like this on{' '}
