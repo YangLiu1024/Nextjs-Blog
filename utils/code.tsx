@@ -1,21 +1,23 @@
+import fs from 'fs'
+import path from 'path'
+const codeFolder = path.join(process.cwd(), 'public', 'code')
 
-import {fetchStatic} from './fetch'
 
-export async function getAllCodeTopics() {
-    return await fetchStatic('/code/demos.json', true)
+export function getAllCodeTopics() {
+    return fs.readdirSync(codeFolder)
 }
 
-export async function getCodeTopic(topic) {
+export function getCodeTopic(topic) {
 
-    const html =  `/code/${topic}/${topic}.html`
-    const jsx = `/code/${topic}/${topic}.jsx`
-    const css = `/code/${topic}/${topic}.css`
-    const deps = `/code/${topic}/${topic}.json`
+    const html =  path.join(codeFolder, topic, `${topic}.html`)
+    const jsx =  path.join(codeFolder, topic, `${topic}.jsx`)
+    const css =  path.join(codeFolder, topic, `${topic}.css`)
+    const deps =  path.join(codeFolder, topic, `${topic}.json`)
 
     return {
-        code: await fetchStatic(jsx) ,
-        html: await fetchStatic(html),
-        css: await fetchStatic(css),
-        dependencies: await fetchStatic(deps, true)
+        code: fs.existsSync(jsx) ? fs.readFileSync(jsx).toString() : '',
+        html: fs.existsSync(html) ? fs.readFileSync(html).toString() : '',
+        css: fs.existsSync(css) ? fs.readFileSync(css).toString() : '',
+        dependencies: fs.existsSync(deps) ? JSON.parse(fs.readFileSync(deps).toString()) : []
     }
 }

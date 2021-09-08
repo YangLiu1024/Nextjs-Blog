@@ -2,9 +2,8 @@ import { getAllCodeTopics } from '../../utils/code'
 import {GetStaticProps} from 'next'
 import Link from 'next/link'
 
-
 export const getStaticProps: GetStaticProps = async () =>  {
-    const allTopics =  await getAllCodeTopics()
+    const allTopics = getAllCodeTopics()
     return {
       props: {
         allTopics,
@@ -13,7 +12,6 @@ export const getStaticProps: GetStaticProps = async () =>  {
   }
 
 const D3Demo = ({allTopics}) => {
-    console.log(allTopics)
     return <ul>
         {
             allTopics.map((t, i) => (

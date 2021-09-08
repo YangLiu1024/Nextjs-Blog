@@ -7,7 +7,7 @@ export default function Topic({code}) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const names = await getAllCodeTopics()
+    const names = getAllCodeTopics()
     const paths = names.map(n => {
         return {
             params: {
@@ -23,7 +23,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params })  => {
     let topic = params.topic
-    const code = await getCodeTopic(topic)
+    const code = getCodeTopic(topic)
+    console.log(code)
     return {
       props: {
          code
