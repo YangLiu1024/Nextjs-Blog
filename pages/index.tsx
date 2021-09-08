@@ -76,6 +76,8 @@ export const getStaticProps: GetStaticProps = async () =>  {
       //the allPosts here will be passed to Home component as a prop
       allPosts,
       env
-    }
+    },
+    revalidate: 10,
+    notFound: false
   }
 }
