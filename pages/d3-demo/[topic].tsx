@@ -3,7 +3,12 @@ import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
 
 export default function Topic({code}) {
-    return <CodePen {...code}/>
+    return <div>
+        <article>
+            <div dangerouslySetInnerHTML={{ __html: code.md}} />
+        </article>
+        <CodePen {...code}/>
+    </div>
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -23,8 +28,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params })  => {
     let topic = params.topic
-    const code = getCodeTopic(topic)
-    console.log(code)
+    const code = await getCodeTopic(topic)
     return {
       props: {
          code
