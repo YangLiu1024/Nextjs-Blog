@@ -71,7 +71,9 @@ d3.selectAll('p')
 * append(type)
 * insert(type[,before]), insert element before specified selector
 * remove()
-* clone([deep]), if deep truthy, clone all descendant children nodes too
+* clone([deep]), if deep truthy, clone all descendant children nodes too. 
+  并且将 clone 出来的elements 插入到选中的元素之后，并且返回新创建的elements 的 selection
+
 
 对于 value, 可以是静态常量，也可以是函数，如果是函数，传入该函数的参数一般为 (datum, index, nodes). 
 

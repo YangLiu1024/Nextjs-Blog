@@ -1,0 +1,132 @@
+# SVG Basic Elements
+SVG(Scalable Vector Graphic) 可以绘制多种形状，比如 line, rectangle, circle, ellipse, path, etc
+## Line
+<code>line</code>具有属性*x1*, *y1*, *x2*, *y2*, (x1, y1)表示起点坐标, (x2, y2) 表示终点坐标
+
+create a line, start at point (10, 10), end at (100, 100), through HTML
+```html
+<svg>
+    <line x1="10" y1="10" x2="100" y2="100"></line>
+</svg>
+```
+通过 d3, 
+```js
+d3.select('svg')
+    .append('line')
+        .attr('x1', 10)
+        .attr('y1', 10)
+        .attr('x2', 100)
+        .attr('y2', 100)
+```
+## rect
+矩形具有属性 *x*, *y*, *width*, *height*, (x, y) 表示矩形左上角点坐标，width 表示矩形宽度，height 表示矩形高度
+
+## circle
+<code>circle</code> 具有属性 *cx*, *cy*, *r*. cx 表示中心点 x 坐标，cy 表示中心点 y 坐标， r 表示圆的半径
+
+## ellipse
+<code>ellipse</code> 和 <code>circle</code> 类似，只是同时具备 *rx* 和 *ry* 表示 x, y 方向上的半径
+
+## text
+<code>text</code> 具有属性 *x*, *y*, *dx*, *dy* 等，(x, y) 表示该文本的start point 坐标， dx, dy 表示 x, y 方向上的偏移
+```js
+d3.select('svg')
+    .append('text')
+        .attr('x', 100)
+        .attr('y', 100)
+        .attr('dx', 10)
+        .attr('dy', '.5em')
+        .text('hello world')
+```
+
+## g
+*g* 是 container 元素， 用来 group 其它 SVG 元素。 且 g 上的 transformation 会 apply 给 group 里所有子元素， g 的属性也会被子元素继承
+## image
+<code>image</code> 用来显示 jpeg/png/gif and other svg files, 它有 *x*, *y*, *width*, *height*, *href* 等属性。 (x, y) 是图像左上角坐标，width, height 是图像显示大小，required
+## path
+<code>path</code> 通过各种命令组合来绘制基础 shape. All basic shapes can be created with a path element. *path* 具有 属性 *d*, *d* 定义了怎样绘制该 shape
+* M, move to, 移动到指定位置，但并不会画线，需要指定 x, y
+* L, line to, 从当前位置画线到指定位置，需要指定 x, y
+* H, horizontal line to, 从当前位置画水平线到指定 x
+* V, vertical line to, 从当前位置画垂直线到指定 y
+* C, curve to
+* S, smooth curve to
+* Q, quadratic bezier curve
+* T, smooth quadratic bezier curve
+* A, elliptical arc
+* Z, close path, 从当前位置画线到起点
+
+上述命令可以大写，可以小写，大写表示绝对定位，小写表示相对定位.
+
+```js
+d3.select('svg')
+    .append('path')
+        .attr('d', 'M 10 10 H 90 V 90 H 10 L 10 10')//equals to 'M 10 10 H 90 V 90 H 10 Z'
+
+//equals to
+d3.select('svg')
+    .append('path')
+        .attr('d', 'M 10 10 h 80 v 80 h -80 z')
+```
+### d3-path
+d3 对 svg path 也有适配
+```js
+let path = d3.path()//创建一个 path 对象
+
+path.moveTo(0, 0)
+path.lineTo(10, 10)
+path.arcTo(x1, y1, x2, y2, radius)
+path.arc(x, y, radius, startAngle, endAngle)
+path.rect(x, y, w, h)
+path.closePath()
+
+path.toString()//return the string representation of this path
+```
+## title
+<code>title</code> 用来给 container element or graphic element 添加 tooltip
+```html
+<circle cx="10" cy="10" r="5">
+    <title>I am a circle</title>
+</circle>
+```
+
+# SVG viewport VS viewBox
+SVG 元素具有 *x*, *y*, *width*, *height*, *preserveAspectRatio* 等属性。 x, y 用在内嵌 SVG 元素上，表示偏移。
+
+width, height 表示该 SVG 元素的 viewport 大小。 
+
+preserveAspectRatio 用来指定当 viewport 和 viewBox aspect ratio 不一致时的 align 策略
+ 
+viewport 相当于视窗，viewBox 用来裁剪用户坐标系上的区域，最后映射到 viewport 坐标系上。
+
+它们之间的关系，简单来说，首先，当我们在 SVG 画布上绘制一系列元素时，我们使用的是用户坐标系，即我们会为元素指定位置，比如
+```html
+<rect x="10" y="10" width="20" height="30"></rect>
+```
+该坐标系 x, y 轴都是无穷大的，意味着我们可以在该画布上绘制任意位置的元素。viewBox 用来在用户坐标系选取区域，minx, miny 是左上角坐标，
+width, height 是选取区域的宽度和高度。 最后，将选取的区域映射到 viewport 上。 没有被裁剪到的区域，就不会映射到 viewport 上，最后 invisible。 
+
+在做映射的时候，让我们先考虑viewport 和 viewBox aspect ratio 相同的情况，
+
+比如 svg *width* = 300, *height* = 400, 然后 viewBox 的值为 “0 0 600 800”, 即我们要将 (0 0 600 800) 区域的图像映射到 (0 0 300 400)， 那么看起来，我们选取的区域就像是被缩小了一倍一样。
+ 
+同样，如果viewBox 为 “0 0 150 200”， 那么我们要将 (0 0 150 200)区域的图像映射到 (0 0 300 400)， 那么看起来，我们选取的区域就像是被放大了一倍一样。
+
+另外，minx,miny 也可以是任意值，当不为0时，最后的结果看起来就像是进行了平移。
+
+可以得出，viewBox 的 minx, miny 属性控制平移，width,height 用来控制缩放。
+
+当 aspect ratio 相同的时候，可以看出选取的 viewBox 是整个完整的填充 viewport 的，但是当 aspect ratio 不同的时候，又该怎么处理呢？
+
+这就要用到属性 preserveAspectRatio 了，这个属性的默认值是 "xMidYMid meet". *xMidYMid* 是一种 align 策略，还有其它的 “xMinYMin, xMaxYMax” 等等。
+
+第二个值 *meet* 是指 viewBox 是否只需要进行最小程度的缩放，以满足某一个方向 fill 就行，而不用两个方向都 fill, 类似于 CSS 里的 ”background-size:contain“
+
+它还有另一个选项 *slice*, 表示两个方向都要 fill, 如果某个方向有溢出，则裁剪掉溢出部分。类似于 CSS 里的 "background-size:cover"
+ 
+ 至于 align 策略，简单来说，比如 xMid, 即表示 viewBox x 方向的 mid 要和 viewport x 方向的 mid 重叠，即viewBox 的中心要和 viewport 的 中心线重合。
+ 
+ xMin 则表示 viewBox 的最左边要和 viewport 的最左边对齐。 其它的策略类似。
+ 
+ preserveAspectRatio 还可以为 *none*, 即表示不保留纵横比，总是将 viewBox 完整的映射到 viewport，即使会导致失真。
+

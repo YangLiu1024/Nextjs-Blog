@@ -3,7 +3,7 @@ import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
 
 export default function Topic({code}) {
-    return <div>
+    return <div style={{margin: 10}}>
         <article>
             <div dangerouslySetInnerHTML={{ __html: code.md}} />
         </article>

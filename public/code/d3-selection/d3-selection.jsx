@@ -1,5 +1,9 @@
-
 d3.selectAll('p')
-    .data(['hello', 'world'])
-        .text((d, i) => `I am number ${i} paragraph: ${d}`)
+    .data(['hello', 'world', 'javascript'])
+    .selectAll('b')
+    .data(d => d)
+    .enter()
+    .each(function(d, i, nodes) {
+        console.log(d, i, nodes.length)
+    })
 

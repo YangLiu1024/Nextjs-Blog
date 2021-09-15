@@ -1,0 +1,10 @@
+let p = d3.path()
+
+p.rect(0 , 0, 200, 300)
+d3.select('#root')
+    .append('svg')
+        .attr('width', 800)
+        .attr('height', 400)
+        .attr('viewBox', "0 0 800 400")
+    .append('path')
+        .attr('d', p)
