@@ -1,8 +1,12 @@
 path {
-    fill: steelblue;
+    fill: none;
     stroke: chocolate;
 }
 
+rect {
+    fill: aliceblue;
+}
+
 svg {
-    background-color: aliceblue;
+    background-color: lightskyblue;
 }

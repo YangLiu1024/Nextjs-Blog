@@ -1,0 +1,51 @@
+# D3 Tile
+D3 tile 通常被用在 large, multi-resolution geometry and images, 比如地图等
+
+# D3 API
+## d3.tile()
+创建一个 default tile layout
+## tile(...arguments)
+通过传入的参数，invoke 对应的 *scale* 和 *translate* accessor, 计算出 the set of tiles.  
+返回值是 [[x,y,z], [x,y,z]...] 的数组, 每一个 [x,y,z] 对应一个 tile, x 表示 x axis 坐标, y 表示 y axis 坐标，z 表示 zoom 坐标. 且每个 tile 的宽高度为 1, 但还要考虑对应的 scale, 才能决定最后的宽高度。   
+且返回的 tile 须与当前的 viewport 相交， 所以，这些返回的 tiles 是 visible tiles.  
+返回的 tiles 数组还具有 *tiles.scale* 和 *tiles.translate* 属性, 表示的是 tiles 整体的缩放和平移。  
+需要注意的是，*tiles.scale* 和 *tiles.translate* 是通过 transform 的 (x,y,k) 计算得出。在计算 tile 坐标对应的像素坐标时，需要先考虑 scale, 再考虑平移  
+
+举例来讲，下面的 function 计算出在当前 viewport 里指定 tile 左上角像素坐标
+```js
+function position(tile, tiles) {
+  const [x, y] = tile;
+  const {translate: [tx, ty], scale: k} = tiles;
+  return [(x + tx) * k, (y + ty) * k];//先scale, 再平移
+}
+
+const tile = d3.tile();
+const tiles = tile({k: 256, x: 480, y: 250});
+for (const t of tiles) {
+  console.log(`tile ${t} is at ${position(t, tiles)}`);
+}
+```
+## tile.extent([extent])
+设置 tile layout 的 viewport extent to [[x0,y0], [x1, y1]], by default, its [[0,0],[960,500]].  
+在进行缩放的时候，tile layout 会根据当前的 transform 计算出在当前 viewport 里的 tiles
+## tile.size([size])
+设置 tile layout viewport 大小，size 为 [width, height], by default, its [960, 500]
+## tile.scale([scale])
+设置 scale accessor, 当 tile layout invoke 时，该 scale accessor 会被 invoke 来计算出 scale 系数，会传入传给 tile 的参数  
+```js
+const tile = d3.tile().scale(t => t.scale).translate(t => t.translate);
+const tiles = tile({scale: 1024, translate: [100, 200]});
+```
+by default, 会假设传入的参数是  transform, 所以 scale accessor 会返回 *transform.k*
+## tile.translate([translate])
+设置 tile translate accessor, 与 tile.scale 类似。by default, 它会返回 *[transform.x, transform.y]*
+## tile.clampX([clamp])
+如果为 true, 则 tile(...arguments) 不会返回在 viewport bounds 之外的 tile, x 满足 0 <= x < 2^z
+## tile.clampY([clamp])
+与 clampX 类似
+## tile.clamp([clamp])
+同时设置 x, y 方向。
+## tile.tileSize([tileSize])
+设置 tile size, by default, its 256
+## d3.tileWrap(tile)
+当 tile 超出了 viewport bounds, d3.tileWrap(tile) 讲该 tile 的 坐标映射到 bounds 里

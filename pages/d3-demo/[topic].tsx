@@ -1,13 +1,18 @@
 import {getAllCodeTopics, getCodeTopic} from '../../utils/code'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
+import {useRef} from "react";
+import ScrollBottom from "../../components/ScrollBottom";
+import * as React from "react";
 
 export default function Topic({code}) {
-    return <div style={{margin: 10}}>
+    const codePen = useRef(null)
+    return <div>
+        <ScrollBottom innerRef={codePen}/>
+        <CodePen innerRef={codePen} {...code}/>
         <article>
             <div dangerouslySetInnerHTML={{ __html: code.md}} />
         </article>
-        <CodePen {...code}/>
     </div>
 }
 

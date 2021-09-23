@@ -1,10 +1,22 @@
-let p = d3.path()
+const spiral = Array.from({length: 75}, (_, i) => [
+    (Math.PI / 3) * i,
+    2 * i
+])
 
-p.rect(0 , 0, 200, 300)
-d3.select('#root')
+function drawLine(selection) {
+    selection.append('path')
+        .attr('d', d3.lineRadial()(spiral))
+}
+
+let svg = d3.select('#root')
     .append('svg')
         .attr('width', 800)
         .attr('height', 400)
         .attr('viewBox', "0 0 800 400")
-    .append('path')
-        .attr('d', p)
+svg.append('rect')
+        .attr('width', '100%')
+        .attr('height', '100%')
+
+svg.append('g')
+        .call(drawLine)
+        .attr('transform', "translate(150 150)")

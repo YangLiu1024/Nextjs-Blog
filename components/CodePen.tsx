@@ -36,7 +36,7 @@ export const CodePen = (props) => {
         [code, html, css, dependencies])
 
     return (
-        <div style={{width: '100%', height: 600, margin: 0, padding: 0, display: 'flex', 'flexDirection': 'row', overflow: 'hidden'}}>
+        <div ref={props.innerRef} style={{width: '100%', height: 600,  padding: 0, display: 'flex', 'flexDirection': 'row', overflow: 'hidden'}}>
             <div style={{flex: '50%'}}>
                 <Tabs style={{width: '100%', height: '100%'}}>
                     <TabList>

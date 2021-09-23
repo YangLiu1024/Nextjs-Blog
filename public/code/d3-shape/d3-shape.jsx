@@ -1,0 +1,11 @@
+const arc = d3.arc()
+    .innerRadius(20)
+    .outerRadius(100)
+    .startAngle(0)
+    .endAngle(Math.PI * 1.5)
+
+d3.select('svg')
+    .append('path')
+        .attr('d', arc())
+        .attr('fill', 'steelblue')
+        .attr('transform', 'translate(250, 250)')

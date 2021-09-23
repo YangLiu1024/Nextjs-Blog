@@ -1,0 +1,157 @@
+# D3 Zoom
+对于 chart, 平移和缩放是基础需求， d3-zoom 提供了简单方便的 solution. 它的流程是
+1. 创建 zoom behavior, *d3.zoom()*
+2. 给该 behavior 添加 start | zoom | end 事件监听器，*zoom.on("zoom", listener)*
+3. 将该 zoom behavior apply 给 selection node, *selection.call(zoom)*
+
+# Table of Contents
+ - [Zoom API](#zoom-api)
+ - [Zoom Transform](#zoom-transform)
+ 
+# Zoom API <a name="zoom-api"></a>
+## d3.zoom()
+创建一个 zoom behavior
+## zoom(selection)
+apply the zoom behavior to selection, 并且给节点添加必要的 滚轮 zoom, 鼠标 drag-drop 平移, 左键 double click zoom in 的 listener, 将节点的 zoom transform 设为 identify transform.
+
+该节点用来接收所有的 user operation, 并且 hold the transform state. 
+
+需要注意的，该节点必须能够被 mouse access, such as svg, rect, g, etc. 对于 g, 要求它的 children 必须具备 fill, 否则不能接收用户输入。比如， g 很大，但是里面只有一个 radius = 1 的 circle, 那么必须操作该 circle 才能触发 zoom
+
+一般通过 <code>selection.call(zoom)</code> 来 apply 给选定的节点。
+
+zoom behavior 在内部通过 selection.on(".zoom", listener) 来绑定 zoom listener, 可以通过将 listener 设为 null 来取消对应的 zoom behavior
+```js
+//取消所有的 zoom listener, 包括 滚轮和鼠标 double click
+selection.call(zoom).on('.zoom', null)
+//取消滚轮 zoom
+selection.call(zoom).on("wheel.zoom", null)
+//取消 double click zoom
+selection.call(zoom).on("dblclick.zoom", null)
+```
+## zoom.transform(selection, transform)
+如果 selection 是 selection 节点，则将其 current zoom transform 设置为 transform, 并且瞬间发出 start,zoom,end 事件，因为该 transformation 是瞬间完成的
+
+如果 selection 是 transition, 那么通过插值创建一个从 current zoom transform 到 transform 的 'zoom' tween, 在 transition  开始时 emit start 事件， 在 transition 的每个 tick 发出 zoom 事件， 在 transition 结束时发出 end 事件
+
+通常不直接调用该函数，而是通过 selection.call or transition.call, for example, to reset the transform to identify
+```js
+selection.call(zoom.transform, d3.zoomIdentity)
+//transform smoothly
+selection.transition().duration(750).call(zoom.transform, d3.zoomIdentity)
+```
+## zoom.translateBy(selection, x, y)
+将current zoom transform 再次平移 (x, y). 如果 selection 是 selection 节点，则立即平移，如果是 transition, 则通过 transition 来平移
+
+x, y 要么是number, 或者返回 number 的函数，如果是函数，则会传入当前 selection 的 datum and index, and this context as the current DOM element
+## zoom.translateTo(selection, x, y)
+与 zoom.translateBy 类似，只是参数不再是相对量，而是绝对量
+## zoom.scaleBy(selection, k)
+与 zoom.translateBy 类似, 只是更新 transform k,  k1 = k0 * k
+## zoom.scaleTo(selection, k)
+与 zoom.scaleBy 类似, 只是k1 = k
+## zoom.filter([filter])
+设置 zoom behavior events 的 filter, 该filter 函数会接收当前 event, 以及当前节点的 datum, 如果 filter 函数返回 false, 这个 event 就会被 ignore, no zoom gestures are started
+## zoom.scaleExtent([extent])
+设置 scale 的上下限 [k0, k1], by default,its [0, +∞]. 
+
+scale extent 限制了 zooming in and out 的上下界，它可以影响 zoom.scaleBy, zoom.scaleTo, 但是如果 user 通过 zoom.transform()显式设置 transform, 则不受此限制。
+
+如果已经通过滚轮 scale 到了上下界，接下来的滚轮事件则会被 ignore, 并不会触发 zoom gesture. 这样也允许该滚轮事件被外界接收，外界仍然可以 scroll down or scroll up.
+
+如果想滚轮事件一直被吞掉，不管是否已经到了 scale 上下界，可以通过
+```js
+selection.call(zoom).on('wheel', e => e.preventDefault())
+```
+## zoom.translateExtent([extent])
+设置 translate bounding box [[x0,y0], [x1,y1]], 只能在该区域内进行平移操作
+
+## zoom.on(typename[,listener])
+给指定 typename 事件注册 listener, 当指定事件发生时，会传给指定listener event, datum, index 作为参数，且 this 绑定到对应的 DOM element. 如果 listener 为 null, 会删除当前绑定的 listener.
+
+typenames 是一个可以包含多个(以空格间隔) typename 的字符串。 typename 的格式为 type.name, such as zoom.foo, type 只能是 one of [start, zoom, end], name 是自定义的名字。
+
+意味着通过自定义名字，可以为相同类型的事件定义多个不同的 listener
+ * start, after zooming begins, such as mouse down
+ * zoom, after a change to the zoom transform, such as mouse move
+ * end, after zooming ends, such as mouse up
+
+## zoom event
+当 zoom event, [start, zoom, end] 发生时， 会发生 zoom event 给事件 listener, 该 event 对象具有以下属性
+ * event.target, the associated zoom behavior
+ * event.type, the type of event, such as 'start', 'zoom', 'end'
+ * event.transform, current zoom transform
+ * event.sourceEvent, the underlying input event, such as mouse move
+ 
+ # Zoom Transform <a name="zoom-transform"></a>
+ Zoom behavior 将 zoom state 存储到 applied 的 element 上，而不是 存储到 zoom behavior 本身。
+ 
+ 这是因为 zoom behavior 可以 apply 多个不同的 element 上，每个element 可以有自己独立的 zoom state. zoom state 可以通过 user 交互或者 programmatically 来改变
+ 
+ 为了获取 element 上当前的 zoom state, 可以通过
+ 1. event listener 中的 event.transform
+ 2. d3.zoomTransform(node)
+ 
+ ## d3.zoomTransform(node)
+ 返回当前指定节点的 zoom transform. 如果该节点没有定义 zoom, 则往上返回最近的祖先的 transform, 如果也没有，返回 d3.zoomIdentity.
+ 
+ note that the node should be DOM element instead of d3 selection, 因为 d3 selection could contain 多个 nodes, 不同 node 可能有不同的 zoom state, 而这个函数只返回 single transform.
+ 
+ 如果你有 d3 selection, call *selection.node()* first
+ ```js
+let transform = d3.zoomTransform(selection.node())
+```
+在zoom event listener 中，也可以通过
+```js
+event.transform
+//or
+d3.zoomTransform(this)//in event listener, 'this' will bind to current DOM element
+```
+internally, d3 会将 zoom state 存为 element.__zoom, 一般不建议直接访问该属性，尽量通过 d3.zoomTransform(node) 来获取 transform.
+
+transform 对象具有以下属性
+* transform.x, the translation on x axis
+* transform.y, the translation on y axis
+* transform.k, the scale factor
+
+这些属性应该被视作 read-only, 只通过相关的 api 来创建新的 zoom transform, such as transform.translate, transform.scale, zoom.scaleBy, zoom.translateTo
+
+to create a transform with given x,y,k
+```js
+let t = d3.zoomIdentity.translate(x, y).scale(k)
+```
+在 CSS 里，想要为element 赋予该 zoom
+```css
+div {
+    transform: "translate(x, y) scale(k)";
+    transform-origin: "0 0";
+}
+```
+to apply a transform to d3 selection
+```js
+let transform = d3.zoomIdentity.translate(x, y).scale(k)
+
+g.attr('transform', `translate(${transform.x} ${transform.y}) scale(${transform.k})`)
+//or
+g.attr('transform', transform)//transform.toString()
+```
+
+## transform.translate(x,y)
+将当前 transform 再平移 (x,y), 返回新的 transform
+## transform.scale(k)
+将当前 transform 再缩放 k, 返回新的 transform
+## transform.apply(point)
+将当前 transform apply 给指定 point, 该 point 是 [x, y], the return array is [xk + tx, yk + ty]
+## transform.invert(point)
+通过当前 transform 和指定 point 计算 responding inverse point, which is [(x-tx)/k, (y-ty)/k]
+## transform.rescaleX(x)
+return a copy of the continuous scale x whose domain is transformed. 
+
+当 chart 包含坐标轴时，我们希望在 zoom 的时候，只 zoom chart 本身，坐标轴保持它的大小，改变的，只是坐标轴的尺度。
+
+所以，transform.rescaleX(x) 可以通过 transform 计算出当前 x 轴对应的 scale, 然后将 scale 的domain 进行更新
+## transform.rescaleY(y)
+return a copy of the continuous scale y whose domain is transformed. 
+## d3.zoomIdentity
+返回 identity transform, k = 1, tx = ty = 0
+

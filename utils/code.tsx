@@ -8,7 +8,7 @@ const codeFolder = path.join(process.cwd(), 'public', 'code')
 
 
 export function getAllCodeTopics() {
-    return fs.readdirSync(codeFolder)
+    return JSON.parse(fs.readFileSync(path.join(codeFolder, 'd3-demo.json')).toString())
 }
 
 export async function getCodeTopic(topic) {
