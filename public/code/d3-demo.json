@@ -4,6 +4,7 @@
   "d3-shape",
   "d3-scale",
   "d3-axis",
+  "d3-transition",
   "d3-zoom",
   "d3-tile"
 ]

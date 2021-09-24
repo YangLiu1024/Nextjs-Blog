@@ -13,14 +13,14 @@ const svg = d3.select('#chart')
 //d3.randomNormal(mu, sigma) use normal Gaussian distribution
 const randomX = d3.randomNormal((chartWidth) / 2, 80)
 const randomY = d3.randomNormal((chartHeight) / 2, 80)
-const datas = Array.from({length: 500}, () => [randomX(), randomY()])
+let datas = Array.from({length: 500}, () => [randomX(), randomY()])
 
 const xs = d3.scaleLinear().domain([0, chartWidth]).range([0, chartWidth])
 const ys = d3.scaleLinear().domain([0, chartHeight]).range([chartHeight, 0])
 //basic chart
 let chart = svg.append('g')
-        .attr('id', 'chart')
-        .attr('transform', `translate(${marginLeft} ${marginTop})`)
+    .attr('id', 'chart')
+    .attr('transform', `translate(${marginLeft} ${marginTop})`)
 
 let xaxis = chart.append('g')
     .attr('id', 'x-axis')
@@ -36,22 +36,31 @@ let yaxis = chart.append('g')
 //为了解决这个问题，引入 clipPath
 chart.append('defs')
     .append('clipPath')
-        .attr('id', 'myClip')
+    .attr('id', 'myClip')
     .append('rect')
-        .attr('width', chartWidth)
-        .attr('height', chartHeight)
+    .attr('width', chartWidth)
+    .attr('height', chartHeight)
 let scatter = chart.append('g')
-        .attr('id', 'scatter')
-        .attr('clip-path', 'url("#myClip")')
+    .attr('id', 'scatter')
+    .attr('clip-path', 'url("#myClip")')
 
-let circles = scatter.selectAll('circle')
-    .data(datas)
-    .join('circle')
-        .attr('cx', d => xs(d[0]))
-        .attr('cy', d => ys(d[1]))
-        .attr('r', 2)
-        .attr('fill', (_, i) => d3.interpolateRainbow(i / 360))
+let circles = drawCircles()
 
+function drawCircles() {
+    return scatter.selectAll('circle')
+        .data(datas)
+        //第一次绘制 circle 时，其 cx,cy,r 都为0， 所以表现形式都是从原点过渡到指定地点
+        .join(enter => enter.append('circle').attr('r', 2).attr('fill', (_, i) => d3.interpolateRainbow(i / 360)))
+            //在后续的绘制时，因为每一个 circle 可能已经经过了缩放，已经具有 transform 属性
+            //在改变它 cx,cy 属性的同时，当前 transform 也会起作用，看起来，就是在当前坐标系下调整了点的位置
+            //如果将点的 transform 属性置为 null, 则相当于对点进行 reset
+            //.attr('transform', null)
+        .transition()
+            .delay((d, i) => i * 20)
+            .attr('cx', d => xs(d[0]))
+            .attr('cy', d => ys(d[1]))
+        .selection()//需要返回 selection instead of transition, 因为 zoomed function 要使用
+}
 function zoomed({transform}, d, i) {
     //除了 zoom chart, x, y 轴也应该随着变化
     let nxs = transform.rescaleX(xs)//计算当前 transform 下的 x axis scale
@@ -62,7 +71,8 @@ function zoomed({transform}, d, i) {
     //因为 clip path 是添加到 scatter 上面的，我们希望它保持不变，所以我们只 apply transform 到 circles
     //否则 clip path 也会进行缩放，就起不到我们想要的效果了
     circles.attr('transform', transform)
-    //similar to below code, 但是本质不一样， transform 是创建了新的了坐标系，下面的code 还是在当前坐标系下进行绘制
+    //similar to below code, 但是本质不一样， transform 是创建了新的了坐标系，且将该属性存在了 circle node 里
+    //下面的code 还是在当前坐标系下进行绘制
     // circles.attr('cx', d => nxs(d[0]))
     //     .attr('cy', d => nys(d[1]))
     //     .attr('r', d => 2 * transform.k)
@@ -76,6 +86,10 @@ svg.call(zoom)//svg is zoom base which is responsible for receiving user input
 
 initToolbar()
 function initToolbar() {
+    d3.select('#refresh').on('click', () => {
+        datas = Array.from({length: 500}, () => [randomX(), randomY()])
+        drawCircles()
+    })
     d3.select('#reset').on('click', () => svg
         .transition()
         .duration(2000)

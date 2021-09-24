@@ -1,0 +1,144 @@
+# D3 Transition
+当 DOM element 状态改变的时候，transition 可以在给定 duration 更为平滑的从 start state 逐渐过渡到 end state, 而不是瞬间完成状态改变。  
+为了完成过渡，d3 内置了很多 interpolator, 可以自动为 number, style, attribute 等等完成插值。  
+使用 transition 也很简单
+1. 创建 transition
+2. 改变状态
+```js
+selection.transition().style('fill', 'steelblue')
+```
+# Table of Contents
+ - [Transition API](#transtion-api)
+ - [Transition Modify](#modify-elements)
+ - [Transition Timing](#transition-timing)
+ - [Transition Flow Control](#transition-flow)
+ - [Transition Life](#transition-life)
+# Transition API <a name="transition-api"></a>
+## selection.transition([name])
+在 selection 节点上创建一个具有名字 name 的 transition, 如果名字没有指定，默认值为 null.  
+如果 name 本身就是一个 transition 实例，则返回具有相同 id 和 name 的 transition. 如果具有相同 id 的 transition 已经存在，则返回该 transition. 
+如果在当前selection 上已经有 名字为 name 的 active transition, 则该 active transition 会被 interrupt, 新建的 transition 会 schedule to start    
+为了在根节点上创建 transition, 可以直接通过 <code>d3.transition()</code>, 当然也可以 <code>d3.selection().transition()</code>
+## selection.interrupt([name])
+在selection 节点上打断当前正 active 的具有名字 name 的 transition, 并且取消后续所有具有名字 name 的 pending transition.  
+<code>d3.interrupt(node[,name])</code> 具有相同效果, node 为 DOM element
+## transition.selection()
+返回该 transition 绑定的 selection. 
+## transition.select([selector])
+transition 也可以像 selection 一样，通过 select 来选取第一个符合 selector 的 descendant children 节点。  
+不同点在于，transition.select() 会在选中节点之上创建一个和 transition 本身具有相同 id, name, timing 参数的新的 transition, 并返回新建的 transition
+```js
+transition.select(selector)
+//equals to
+transition.selection()
+    .select(selector)
+    .transition(transition)
+```
+## transition.selectAll(selector)
+与 transition.select(selector) 和 d3.selectAll 类似
+## transition.transition()
+基于当前 transition 返回一个新的 transition, 新的 transition 也绑定在相同 selection 上，且在当前 transition end 时 schedule to start.  
+新的 transition 会继承 name, duration, easing 等配置
+## d3.active(node[,name])
+返回在 node 上 active 的 具有名字 name 的 transition, return null if no active transition on specified node  
+该方法在创建循环 transition 的时候很好用
+```js
+d3.selectAll("circle").transition()
+    .delay(function(d, i) { return i * 50; })
+    .on("start", function repeat() {
+        d3.active(this)
+            .style("fill", "red")
+          .transition()
+            .style("fill", "green")
+          .transition()
+            .style("fill", "blue")
+          .transition()
+            .on("start", repeat);
+      });
+```
+## transition.each(function)
+selection.each 会传入selection node 自己的 datum, index, and nodes 作为参数， this 绑定为当前 DOM element  
+transition.each 完全等价于 selection.each
+## transition.call(function[,arguments...])
+与 selection.call 类似, 传入一个函数，并且可能需要的参数， 区别在于该 function 第一个参数是当前 transition, 而不是 selection element
+
+# Transition Modify <a name="modify-elements"></a>
+创建 transition 之后，就可以改变绑定 node 任意状态来实现状态的平滑过渡。 对同一 transition, 不同的 attr/style 等 change 是可以级联的，会同时生效
+```js
+transition.style('fill', 'red')
+    .style('stroke', 'black')
+```
+如果想在当前 transition 结束的时候再开始新的 transition, 则可以通过 <code>transition.transition()</code> 来创建
+## transition.attr(name, value)
+在 transition start 时，在 current attribute(name) 的 value 与指定 target value 之间通过插值建立 tween  
+如果 value 是 function, 那么会传入当前 datum, index, nodes 来计算出 target value  
+如果 value 是 null, 那么在 transition 开始的时候，会 remove 该 attribute  
+插值函数是通过 target value type 来自动选择，如果是 number, 则使用 d3.interpolateNumber, 如果是 color, or a string represent color, use d3.interpolateRgb. 其它情况，使用 d3.interpolateString
+## transition.attrTween(name[,factory])
+设置 attribute name 的插值函数工厂，该工厂会返回插值函数。当 transition start, 会为每一个 element 调用该工厂，传入当前 datum, index 等，返回插值函数。  
+返回的插值函数会用来在 transition 的 每一帧来计算出当前帧 target value, 插值函数必须返回 string  
+```js
+//该 transition 总是从 red 过渡到 blue, 而不管 current fill value 到底是什么
+transition.attrTween('fill', (d,i,nodes) => d3.interpolateRgb('red', 'blue'))
+//或者 返回一个 custom rainbow interpolator
+transition.attrTween('fill', (d, i, nodes) => {
+    return function(t) {//t is eased time, in the range [0, 1]
+      return `hsl(${t * 360}, 100%,50%)`
+    }
+})
+```
+## transition.style(name, value)
+与 transition.attr(name, value) 类似
+## transition.styleTween(name[,factory])
+与 transition.attrTween() 类似
+## transition.text(value)
+在 transition start 的时候设置 selected node 的 text 为 target value, by default, 是没有插值过渡的，因为 text 的插值过渡一般是 undesirable
+## transition.textTween([factory])
+与 transition.attrTween() 类似
+## transition.remove()
+当 transition 结束，如果没有其它 pending/active transition, 删掉对应的 selection node, 如果有， remove does nothing
+## transition.tween(name[,factory])
+该 transition 不再局限于 attr/style/text, 创建一个名字为 name 的插值工厂 factory. 该工厂在 transition start 的时候为每一个 selection node invoke factory to create value setter function    
+该 value setter function 直接更新 DOM element state
+```js
+transition.tween("attr.fill", function() {
+  const i = d3.interpolateRgb(this.getAttribute("fill"), "blue");
+  return function(t) {
+    this.setAttribute("fill", i(t));
+  };
+});
+```
+# Transition Timing <a name="transition-timing"></a>
+每个 transition 具有自己的 easing, delay, duration 时间配置
+## transition.delay([value])
+设置 transition 的 delay 时间，以 毫秒为单位，by default, its 0. 如果 value 是 function, 则传入 当前节点的 datum, index, nodes 来计算
+## transition.duration([value])
+设置 transition 的 duration 时间, 以毫秒为单位，by default, its 250ms
+## transition.ease([function])
+为 transition 绑定的所有 selection node 设置 easing function, 该 function 会在 transition 的每一帧 normalized time t, in the range [0, 1], 用来计算 新的 ease time.  
+一个好的 ease function 会在 t = 0 时返回 0, 在 t = 1 时返回 1. by default, it use d3.easeCubic
+## transition.easeVarying(factory)
+为 transition ease function 设置 factory, 该 factory 为每一个 selection node 生成对应的 easing function
+# Transition Flow Control <a name="transition-flow"></a>
+For advanced usage, transitions provide methods for custom flow control
+## transition.end()
+返回一个 promise, 会在所有绑定的 selection node 上的 transition 都 finish 的时候 resolve, if any element's transition 被 interrupt 或者 cancel, 则 reject
+## transition.on(typenames[,listener])
+transition 允许监听 transition 每个阶段的事件，shown as below
+* start, when transition start
+* end, when transition end
+* interrupt, when transition is interrupted 
+* cancel, when transition is canceled
+
+与 zoom typename 类似，transition typename 也是 type.name 的形式，不同的 typename 通过空格隔开  
+当 listener 被触发时，会传入当前 element 的 datum, index, nodes, 并且 this 在 listener 里会被绑定到当前 DOM node
+# Transition Life <a name="transition-life"></a>
+首先，可以通过 <code>selection.transition()</code> or <code>transition.transition()</code> 来创建 transition  
+创建 transition 之后，可以配置该 transition 的 timing, such as delay, duration, 或者各种 state, such as attribute or style, 的 target value 以及事件监听器
+shortly after creation, 要不在当前帧的末尾或者在下一帧，创建的 transition 会被 scheduled. schedule 之后的 transition 的 *delay* 和 *start* 事件监听器就不能再被改变了  
+当一个 transition start, 它会 interrupt 在当前 element 上具有相同 name 的 active transition.   
+需要注意的是，interrupt happen on start, not creation. 即使创建一个 zero-delay 的 transition 也不会立即 interrupt 当前active 的 同名 transition, the active transition 会坚持到当前帧结束。  
+如果你想立即 interrupt 一个 transition, 使用 <code>selection.interrupt()</code>  
+transition start 的时候，会发出 start 事件。start 事件是 user 修改 transition 配置的最后机会。  
+在 transition 期间，通过 interpolate 函数和 eased time t, which in range [0, 1], 来计算当前值。  
+在 transition end 的时候，会发出 end 事件。这是该 transition  能够被 inspect 的最后时机。after ending, 该 transition 会从 element 上删除，它的配置会被销毁。
