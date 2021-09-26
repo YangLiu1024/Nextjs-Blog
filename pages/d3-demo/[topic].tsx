@@ -11,7 +11,7 @@ export default function Topic({code}) {
         <ScrollBottom innerRef={codePen}/>
         <CodePen innerRef={codePen} {...code}/>
         <article>
-            <div dangerouslySetInnerHTML={{ __html: code.md}} />
+            <div dangerouslySetInnerHTML={{ __html: code.md}} style={{margin: "0 0 20px 20px"}}/>
         </article>
     </div>
 }
