@@ -3,6 +3,7 @@ import { Tabs, TabList, TabPanel, Tab } from 'react-tabs'
 import dynamic from 'next/dynamic'
 import 'react-tabs/style/react-tabs.css'
 import Previewer from "./Previewer";
+import useSWR from 'swr'
 
 import {useDebounce} from "react-use";
 
@@ -15,25 +16,41 @@ const Editor = dynamic(
     {ssr: false}
 )
 
+function fetchText(url) {
+    return fetch(url).then(r => {
+        if (r.ok) {
+            return r.text()
+        } else {
+            return ''
+        }
+    })
+}
 export const CodePen = (props) => {
+    const {data: icode} = useSWR(props.code, fetchText)
+    const {data: ihtml} = useSWR(props.html, fetchText)
+    const {data: icss} = useSWR(props.css || null, fetchText)
+    const {data: deps} = useSWR(props.deps || null, fetchText)
 
-    const [code, setCode] = useState(props.code)
-    const [html, setHtml] = useState(props.html)
-    const [css, setCss] = useState(props.css)
-    const [dependencies, setDependencies] = useState(props.dependencies)
+    const [code, setCode] = useState(icode)
+    const [html, setHtml] = useState(ihtml)
+    const [css, setCss] = useState(icss)
 
-    const [debounceValue, setDebounceValue] = useState({...props})
+    useEffect(() => {
+        setCode(icode)
+        setHtml(ihtml)
+        setCss(icss)
+    }, [icode, ihtml, icss])
 
+    const [debounceValue, setDebounceValue] = useState({code, css, html})
     const [_, cancel] = useDebounce(() => {
             setDebounceValue({
                 code,
                 html,
-                css,
-                dependencies
+                css
             })
         },
         2000,
-        [code, html, css, dependencies])
+        [code, html, css])
 
     return (
         <div ref={props.innerRef} style={{width: '100%', height: 600,  padding: 0, display: 'flex', 'flexDirection': 'row', overflow: 'hidden'}}>
@@ -59,7 +76,7 @@ export const CodePen = (props) => {
                 <Previewer code={debounceValue.code || ''}
                            html={debounceValue.html || ''}
                            css={debounceValue.css || ''}
-                           dependencies={debounceValue.dependencies || []}
+                           dependencies={(deps && JSON.parse(deps)) || []}
                             type={'javascript'}/>
             </div>
         </div>

@@ -2,16 +2,20 @@ import {getAllCodeTopics, getCodeTopic} from '../../utils/code'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
 import {useRef} from "react";
-import ScrollBottom from "../../components/ScrollBottom";
 import * as React from "react";
+import {MDXRemote} from "next-mdx-remote";
 
-export default function Topic({code}) {
+export default function Topic({source, frontMatter}) {
     const codePen = useRef(null)
-    return <div>
-        <ScrollBottom innerRef={codePen}/>
-        <CodePen innerRef={codePen} {...code}/>
+    return <div style={{margin: "20px 0 20px 20px"}}>
+        {/*<ScrollBottom innerRef={codePen}/>*/}
+        {/*<CodePen innerRef={codePen} {...code}/>*/}
+        {/*<article>*/}
+        {/*    <div dangerouslySetInnerHTML={{ __html: code.md}} style={{margin: "0 0 20px 20px"}}/>*/}
+        {/*</article>*/}
+        {frontMatter.title && <h1>{frontMatter.title}</h1>}
         <article>
-            <div dangerouslySetInnerHTML={{ __html: code.md}} style={{margin: "0 0 20px 20px"}}/>
+            <MDXRemote {...source} components={{CodePen}}></MDXRemote>
         </article>
     </div>
 }
@@ -36,7 +40,7 @@ export const getStaticProps: GetStaticProps = async ({ params })  => {
     const code = await getCodeTopic(topic)
     return {
       props: {
-         code
+          ...code
       }
     }
 }

@@ -12,13 +12,15 @@
     "date-fns": "^2.22.1",
     "gray-matter": "^4.0.3",
     "next": "^10.0.0",
+    "next-mdx-remote": "^3.0.4",
     "react": "17.0.1",
     "react-ace": "^9.4.3",
     "react-dom": "17.0.1",
     "react-tabs": "^3.2.2",
     "react-use": "^17.2.4",
     "remark": "^13.0.0",
-    "remark-html": "^13.0.1"
+    "remark-html": "^13.0.1",
+    "swr": "^1.0.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.11",
