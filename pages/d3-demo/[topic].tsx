@@ -1,12 +1,10 @@
 import {getAllCodeTopics, getCodeTopic} from '../../utils/code'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
-import {useRef} from "react";
 import * as React from "react";
 import {MDXRemote} from "next-mdx-remote";
 
 export default function Topic({source, frontMatter}) {
-    const codePen = useRef(null)
     return <div style={{margin: "20px 0 20px 20px"}}>
         {/*<ScrollBottom innerRef={codePen}/>*/}
         {/*<CodePen innerRef={codePen} {...code}/>*/}

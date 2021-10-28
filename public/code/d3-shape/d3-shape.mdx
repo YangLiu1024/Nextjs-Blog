@@ -2,6 +2,9 @@
 有的图形比较简单，比如矩形，可以直接通过 rect 创建，但是对于其它较为复杂的图形，比如 pie, stack 等，可以通过 d3-shape 来创建
 
 ## Arcs
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-arc.jsx"/>
+
 ### d3.arc()
 创建一个弧形 generator, with default setting, such  as <code>const arc = d3.arc()</code>
 ### arc(...arguments)
@@ -48,6 +51,9 @@ d3.select('svg')
 
 ## Pie
 Pie generator 并不会直接生成图形，instead, 它会根据传入的数据计算出每个 pie 的 startAngle, endAngle 等等，这些数据接下来就可以传给 arc generator 来生成图形
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-pie.jsx"/>
+
 ### d3.pie()
 创建 pie generator with default setting
 ### pie(data)
@@ -83,16 +89,11 @@ const arcs = d3.pie()(data);
 pie.value((d, i, datas) => d)//return the datum directly
 ```
 如果传入的数组元素是 object, 则可以在这里指定 value accessor
-
 ### pie.sort([compare])
-指定 datum comparator, sort all pies according to it. by default, datum comparator is null, it will sort by value in descending order.
-
-如果显式指定了 datum comparator, 会将 value comparator 置为 null。
-
-需要注意的是，sort 本身不会改变返回值数组元素的顺序，它始终保持和输入数组的一一对应。sort 改变的是每一个 pie 的 index 属性，以及它对应的 startAngle 和 endAngle.
-
+指定 datum comparator, sort all pies according to it. by default, datum comparator is null, it will sort by value in descending order.  
+如果显式指定了 datum comparator, 会将 value comparator 置为 null。  
+需要注意的是，sort 本身不会改变返回值数组元素的顺序，它始终保持和输入数组的一一对应。sort 改变的是每一个 pie 的 index 属性，以及它对应的 startAngle 和 endAngle.  
 且如果你想 d1 排在 d2 前面，则 compare(d1, d2) 需要返回 negative value
-
 ### pie.sortValues([compare])
 指定 value comparator, 它比较的是 value instead of datum, by default, 
 ```js
@@ -153,6 +154,9 @@ pie.append('text')
 
 ## Line
 line generator 用来生成线条
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-line.jsx"/>
+
 ### d3.line([x][,y])
 创建一个 line generator with default setting, 如果指定了x or y, 则设置对应的 x, y accessor
 ### line(data)
@@ -163,10 +167,8 @@ data 是数组，by default, 该数组元素应该是含有2个元素的数组[x
 设置 y accessor. by default, it is <code>(d, i, datas) => d[1]</code>
 ### line.curve([curve])
 设置该线条的 curve, by default, its d3.curveLinear, 即数据点之间通过直线连接
-
 ### d3.lineRadial()
-创建一个 line generator with default setting, 该 generator 和 d3.line() 的区别在于，该 generator 不是使用 (x,y) 坐标，而是使用 (angle, radius)
-
+创建一个 line generator with default setting, 该 generator 和 d3.line() 的区别在于，该 generator 不是使用 (x,y) 坐标，而是使用 (angle, radius)  
 且 angle 使用弧度
 ### lineRadial(data)
 similar with line(data), 区别在于，d[0] 是 angle, d[1] 是 radius
@@ -175,23 +177,11 @@ similar with line.x()
 ### lineRadial.radius([radius])
 similar with line.y()
 
-### line demo
-```js
-const spiral = Array.from({length: 75}, (_, i) => [
-    (Math.PI / 3) * i,
-    2 * i
-])
-
-d3.select('svg')
-    .append('path')
-        .attr('transform', 'translate(250, 250)')
-        .attr('fill', 'none')
-        .attr('d', d3.lineRadial()(spiral))
-        .attr('stroke', 'steelblue')
-```
-
 ## Area
 区域图形是指有两条bounding line 围成的区域。通常，这两条线条有相同的 x value, 即 x0 = x1, 并且 y0 != y1. y0 通常设为常量 0
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-area.jsx"/>
+
 ### d3.area([x][,y0][,y1])
 创建一个区域图形 generator with default setting. 
 ### area(data)
@@ -230,53 +220,6 @@ data 是数据数组，通过该数组以及对应的 x, y accessor 生成 area.
 ### areaRadial.outerRadius([radius])
 类似于 area.y1()
 
-### area demo
-```js
-const datas = d3.range(0, Math.PI * 2, Math.PI / 10)
-
-const xs = d3.scaleLinear()
-    .domain(d3.extent(datas))
-    .range([0, 400])
-
-const ys = d3.scaleLinear()
-    .domain([-1, 1])
-    .range([400, 0])
-
-const area = d3.area()
-    .x(d => xs(d))
-    .y0(d => ys(Math.sin(d)))
-    .y1(d => ys(Math.cos(d)))
-    .defined(d => d != Math.PI)
-
-let g = d3.select('svg')
-    .append('g')
-        .attr('transform', 'translate(30, 10)')
-
-g.append('path')
-    .attr('d', area(datas))
-    .attr('fill', 'steelblue')
-
-g.append('g')
-    .attr('id', 'x-axis')
-    .attr('transform', 'translate(0, 400)')
-  .call(d3.axisBottom(xs))
-
-g.append('g')
-    .attr('id', 'y-axis')
-  .call(d3.axisLeft(ys))
-
-g.selectAll('circle')
-    .data(datas)
-    .join('circle')
-        .attr('cx', xs)
-        .attr('cy', d => ys(Math.sin(d)))
-        .attr('r', 3)
-        .attr('fill', 'white')
-        .attr('stroke', 'lightsteelblue')
-    .clone()
-        .attr('cy', d => ys(Math.cos(d)))
-```
-
 ## Curve
 line 被定义为一组 (x, y) 点的连线，area 被定义为 topline 和 baseline 之间的区域，除此之外，还有一个很重要的工作，那就是怎么连接离散的点。 换句话说，就是在离散的点之间怎么进行插值。
 
@@ -284,14 +227,15 @@ d3 定义了很多插值函数，可以被 line 或者 area 这种 generator 直
 
 ## Stack
 有的时候我们需要使用 stack chart, 比如将多个 area chart 堆叠起来。
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-stack.jsx"/>
+
 ### d3.stack()
 创建一个 stack generator with default setting, d3.stack() 类似于 d3.pie(), 它们都不直接生成图形，而是生成数据，以供其它generator 使用 
 
 ### stack(data[,arguments])
-data 是数据数组，返回 series 数组。
-
-一般，data 数组中每个元素包含了一列的数据，即该纵列可能包含多个 key, 每个 key 有自己的 value。
-
+data 是数据数组，返回 series 数组。  
+一般，data 数组中每个元素包含了一列的数据，即该纵列可能包含多个 key, 每个 key 有自己的 value。  
 返回的 series 数组中每个元素也是一个数组，它则包含了一行的数据，该行数据属于同一个 key. 
 ```js
 //第一层 layer(series)
@@ -317,8 +261,7 @@ keys 用来指定每一个 layer(series) 的 key, 一般是字符串。每一个
 ### stack.value([value])
 设置 value accessor, by default, it assume datum is object, key is named property, d[key] return numerical value, <code>(d, key, i, datas) => d[key]</code>. 
 ### stack.order([order])
-同样，stack chart 也包含多层 layer, 也涉及到排序的问题，by default, its d3.stackOrderNone, 表示和 keys 保持相同的顺序
-
+同样，stack chart 也包含多层 layer, 也涉及到排序的问题，by default, its d3.stackOrderNone, 表示和 keys 保持相同的顺序  
 如果指定 order function, 它会传入生成好的 series 数组，然后该函数必须返回一个index 数组
 ```js
 //the order function define the order for each series
@@ -331,8 +274,7 @@ function orderNone(series) {
 ```
 order function 在 offset 之前执行，这个时候，所有点的 lower value 还是 0， order 完成后，会更新所有 series 的 index
 ### stack.offset([offset])
-该函数用来更新所有点的 lower and upper value, by default, its d3.stackOffsetNone, it will use zero baseline
-
+该函数用来更新所有点的 lower and upper value, by default, its d3.stackOffsetNone, it will use zero baseline  
 该函数接收生成的 series 数组，以及 order 函数生成的 order 数组
 ```js
 function offsetNone(series, order) {
@@ -346,85 +288,12 @@ function offsetNone(series, order) {
     }
 }
 ```
-### stack demo
-```js
-const datas = [
-  {month: new Date(2015, 0, 1), apples: 3840, bananas: 1920, cherries: 960, dates: 400},
-  {month: new Date(2015, 1, 1), apples: 1600, bananas: 1440, cherries: 960, dates: 400},
-  {month: new Date(2015, 2, 1), apples:  640, bananas:  960, cherries: 640, dates: 400},
-  {month: new Date(2015, 3, 1), apples:  320, bananas:  480, cherries: 640, dates: 400}
-];
-
-const stack = d3.stack()
-    .keys(["apples", "bananas", "cherries", "dates"])
-//进入 order function 之前，默认生成的 series 数组, 现在数据还没有形成堆叠
-//[
-    //data 都指向该元素的origin datum in input datas
-    //[[0, 3840, data:{...}], [0, 1600, data: {...}], [0, 640, data: {...}], [0, 320, data: {...}], key: 'apples'],//the index is undefined yet 
-    //[[0, 1920, data:{...}], [0, 1440, data: {...}], [0, 960, data: {...}], [0, 480, data: {...}], key: 'bananas'],
-    //[[0, 960, data:{...}], [0, 960, data: {...}], [0, 640, data: {...}], [0, 640, data: {...}], key: 'cherries'],
-    //[[0, 400, data:{...}], [0, 400, data: {...}], [0, 400, data: {...}], [0, 400, data: {...}], key: 'dates'],
-//]
-    //在 order function 里，通过返回的 order 数组，设置每个 series 的 index
-    .order(d3.stackOrderNone)//stackOrderNone 会返回 [0, 1, 2, 3], 所以 series[0].index = 0, series[1].index = 1...
-    //offset 函数会更新每个 series 里每个 point 的上下限，将每个 series 堆叠起来
-    .offset(d3.stackOffsetNone)
-
-let series = stack(datas)
-
-const colors = d3.scaleOrdinal(['red', 'blue', 'yellow', 'green'])
-
-let container = d3.select('svg')
-    .append('g')
-        .attr('transform', 'translate(50, 10)')
-
-const xs = d3.scaleUtc()
-    .domain(d3.extent(datas, ({month}) => month))
-    .range([0, 400])
-    .nice()
-
-const ys = d3.scaleLinear()
-    .domain([0, d3.max(series, s => d3.max(s, p => p[1]))])
-    .range([400, 0])
-    .nice()
-
-const area = d3.area()
-    .x(p => xs(p.data.month))//注意这里使用的是 p.data.month
-    .y0(p => ys(p[0]))
-    .y1(p => ys(p[1]))
-
-container.selectAll('path')
-    .data(series)
-    .join('path')
-        .attr('d', area)
-        .attr('stroke', 'steelblue')
-        .attr('fill', (_, i) => colors(i))
-container.append('g')
-        .attr('transform', 'translate(0, 400)')
-      .call(d3.axisBottom(xs).ticks(d3.utcMonth))
-      
-container.append('g')
-    .call(d3.axisLeft(ys))
-
-let legendItem = container.append('g')
-        .attr('id', 'legend')
-        .attr('transform', 'translate(300, 10)')
-    .selectAll('g')
-    .data(stack.keys())
-    .join('g')
-        .attr('transform', (_, i) => `translate(0, ${i * 20})`)
-legendItem.append('rect')
-    .attr('width', 20)
-    .attr('height', 15)
-    .attr('fill', (d, i) => colors(i))
-legendItem.append('text')
-    .attr('x', 25)
-    .attr('y', 15)
-    .text(d => d)
-```
 
 ## Symbol
 d3 提供了一些基础的 symbol, 比如圆，十字形，菱形，五角星等。这些 symbol 通常用于 scatter plot
+### Sample
+<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape-symbol.jsx"/>
+
 ### d3.symbol([type][,size])
 创建一个 symbol generator with default setting. by default, type is circle, size is 64
 ### symbol(...arguments)
@@ -439,20 +308,6 @@ d3 提供了一些基础的 symbol, 比如圆，十字形，菱形，五角星�
 返回 circle symbol type
 ### d3.symbolCross
 返回 cross symbol type
-
-### symbol demo
-```js
-d3.select('svg')
-    .selectAll('path')
-    .data(d3.symbols)
-    .join('path')
-        .attr('d', d => d3.symbol().type(d).size(100)())
-        .attr('transform', (_, i) => `translate(${i * 20}, 50)`)
-```
-
-
-# Demo
-<CodePen html="/code/d3-shape/d3-shape.html" deps="/code/d3-shape/d3-shape.json" code="/code/d3-shape/d3-shape.jsx"/>
 
 
 

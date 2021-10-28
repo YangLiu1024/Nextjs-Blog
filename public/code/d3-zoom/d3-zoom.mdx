@@ -4,6 +4,9 @@
 2. 给该 behavior 添加 start | zoom | end 事件监听器，*zoom.on("zoom", listener)*
 3. 将该 zoom behavior apply 给 selection node, *selection.call(zoom)*
 
+# Sample
+<CodePen html="/code/d3-zoom/d3-zoom.html" deps="/code/d3-zoom/d3-zoom.json" code="/code/d3-zoom/d3-zoom.jsx" />
+
 # Table of Contents
  - [Zoom API](#zoom-api)
  - [Zoom Transform](#zoom-transform)
@@ -154,7 +157,4 @@ return a copy of the continuous scale x whose domain is transformed.
 return a copy of the continuous scale y whose domain is transformed. 
 ## d3.zoomIdentity
 返回 identity transform, k = 1, tx = ty = 0
-
-# Demo
-<CodePen html="/code/d3-zoom/d3-zoom.html" deps="/code/d3-zoom/d3-zoom.json" code="/code/d3-zoom/d3-zoom.jsx" />
 

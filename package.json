@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "ace-builds": "^1.4.12",
+    "console-feed": "^3.2.2",
     "date-fns": "^2.22.1",
     "gray-matter": "^4.0.3",
     "next": "^10.0.0",

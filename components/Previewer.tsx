@@ -1,8 +1,22 @@
+import React, {useEffect, useRef, useState} from "react";
+import { Tabs, TabList, TabPanel, Tab } from 'react-tabs'
+import dynamic from "next/dynamic";
+
+const LogsContainer = dynamic(() => import('./LogContainer'), {ssr: false})
+
 const Previewer = (props) => {
     const scripts = props.dependencies?.map(d => `<script src="${d}"></script>`).join('') || ''
     const type = props.type || 'babel'
+    const ref = useRef(null)
     return (
-        <iframe style={{width: '100%', height: '100%'}} srcDoc={`<!DOCTYPE html>
+        <div >
+            <Tabs style={{width: '100%', height: '100%'}} forceRenderTabPanel={true}>
+                <TabList>
+                    <Tab>Result</Tab>
+                    <Tab>Console</Tab>
+                </TabList>
+                <TabPanel>
+                    <iframe ref={ref} style={{width: '100%', height: 600}} srcDoc={`<!DOCTYPE html>
             <html lang="en">
                 <head>
                     <meta charset="UTF-8"/>
@@ -14,9 +28,6 @@ const Previewer = (props) => {
                 </head>
                 <body>
                     ${props.html}
-                    <script type="javascript">
-                        window.onerror = error => console.log(error)
-                    </script>
                     <script type="text/${type}">
                         try {
                             ${props.code}
@@ -27,6 +38,14 @@ const Previewer = (props) => {
                 </body>
             </html>
         `}/>
+                </TabPanel>
+                <TabPanel>
+                    <div style={{ backgroundColor: "#242424" }}>
+                        <LogsContainer iframeRef={ref}/>
+                    </div>
+                </TabPanel>
+            </Tabs>
+        </div>
     )
 }
 

@@ -1,0 +1,8 @@
+d3.select('svg')
+    .append('g')
+        .attr('transform', 'translate(200, 250)')
+    .selectAll('path')
+    .data(d3.symbols)
+    .join('path')
+        .attr('d', d => d3.symbol().type(d).size(300)())
+        .attr('transform', (_, i) => `translate(${i * 50}, 0)`)

@@ -2,7 +2,10 @@
 绘制 chart 时通常需要添加坐标轴，d3 为此提供了方便的 axis component.
 
 需要注意的是，axis 总是在 origin 处渲染，需要 user 自己设置 transform 属性更改位置。而且 d3 axis 通常和 d3-scale 结合使用
+# Sample
+<CodePen html="/code/d3-axis/d3-axis.html" deps="/code/d3-axis/d3-axis.json" code="/code/d3-axis/d3-axis.jsx"/>
 
+# Axis API
 ## d3.axisTop(scale)
 创建一个 top-oriented axis, 即 ticks are drawn above the horizontal domain path. by default, axis arguments 为empty, tick size 为 6, padding = 3
 
@@ -18,10 +21,8 @@ tick value 在 vertical domain path 左边
 ## axis.ticks([interval[,format]])
 参数会被传递给 axis scale 对应的 ticks and  tickFormat when axis is rendered. 如果 scale 本身没有实现 ticks 或者 tickFormat, 则 该调用无效
 ## axis.tickValues([values])
-如果 values 被指定，则使用该 values 作为ticks, 而不是使用 scale 自己的 tick generator 来生成 ticks.
-
-如果 values 为 null, 则清除之前设置过的 values, 改成使用 scale 自己的 tick generator
-
+如果 values 被指定，则使用该 values 作为ticks, 而不是使用 scale 自己的 tick generator 来生成 ticks.  
+如果 values 为 null, 则清除之前设置过的 values, 改成使用 scale 自己的 tick generator  
 如果不带参数，则返回当前设置的 tick values, 默认为 null
 ## axis.tickFormat([format])
 设置 tick format, by default, is null, 表示使用 scale 自己的 format. 通常直接使用 *axis.ticks([count][,format])*
@@ -31,6 +32,3 @@ tick value 在 vertical domain path 左边
 设置 axis inner tick size. inner tick size 控制tick 的长度
 ## axis.tickSizeOuter([size])
 outer tick size 控制的是 domain path 首尾两端square ends 的长度。 首尾两端 square end 有的时候和 first and last inner tick 重合，有的时候first/last tick 之外还会有一定的长度
-
-# Demo
-<CodePen html="/code/d3-axis/d3-axis.html" deps="/code/d3-axis/d3-axis.json" code="/code/d3-axis/d3-axis.jsx"/>

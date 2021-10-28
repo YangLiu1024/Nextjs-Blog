@@ -10,7 +10,7 @@ import {useDebounce} from "react-use";
 //next.js try to pre-render each page at server side.
 //but AceEditor depend on the 'window' object which only exist at browser side
 //so when render this page on server side, node.js has no idea of 'window', then it will popup error
-//to fix this issue, we need to load Editor component dynamiclly, then it will not be rendered at server side
+//to fix this issue, we need to load Editor component dynamically, then it will not be rendered at server side
 const Editor = dynamic(
     () => import('./Editor'),
     {ssr: false}

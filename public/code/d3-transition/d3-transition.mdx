@@ -7,6 +7,9 @@
 ```js
 selection.transition().style('fill', 'steelblue')
 ```
+# Sample
+<CodePen html="/code/d3-transition/d3-transition.html" deps="/code/d3-transition/d3-transition.json" code="/code/d3-transition/d3-transition.jsx" css="/code/d3-transition/d3-transition.css"/>
+
 # Table of Contents
  - [Transition API](#transtion-api)
  - [Transition Modify](#modify-elements)
@@ -144,6 +147,3 @@ shortly after creation, 要不在当前帧的末尾或者在下一帧，创建�
 transition start 的时候，会发出 start 事件。start 事件是 user 修改 transition 配置的最后机会。  
 在 transition 期间，通过 interpolate 函数和 eased time t, which in range [0, 1], 来计算当前值。  
 在 transition end 的时候，会发出 end 事件。这是该 transition  能够被 inspect 的最后时机。after ending, 该 transition 会从 element 上删除，它的配置会被销毁。
-
-# Demo
-<CodePen html="/code/d3-transition/d3-transition.html" deps="/code/d3-transition/d3-transition.json" code="/code/d3-transition/d3-transition.jsx" css="/code/d3-transition/d3-transition.css"/>
