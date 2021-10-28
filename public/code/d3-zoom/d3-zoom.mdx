@@ -56,12 +56,9 @@ x, y 要么是number, 或者返回 number 的函数，如果是函数，则会�
 ## zoom.filter([filter])
 设置 zoom behavior events 的 filter, 该filter 函数会接收当前 event, 以及当前节点的 datum, 如果 filter 函数返回 false, 这个 event 就会被 ignore, no zoom gestures are started
 ## zoom.scaleExtent([extent])
-设置 scale 的上下限 [k0, k1], by default,its [0, +∞]. 
-
-scale extent 限制了 zooming in and out 的上下界，它可以影响 zoom.scaleBy, zoom.scaleTo, 但是如果 user 通过 zoom.transform()显式设置 transform, 则不受此限制。
-
-如果已经通过滚轮 scale 到了上下界，接下来的滚轮事件则会被 ignore, 并不会触发 zoom gesture. 这样也允许该滚轮事件被外界接收，外界仍然可以 scroll down or scroll up.
-
+设置 scale 的上下限 [k0, k1], by default,its [0, +∞].   
+scale extent 限制了 zooming in and out 的上下界，它可以影响 zoom.scaleBy, zoom.scaleTo, 但是如果 user 通过 zoom.transform()显式设置 transform, 则不受此限制。  
+如果已经通过滚轮 scale 到了上下界，接下来的滚轮事件则会被 ignore, 并不会触发 zoom gesture. 这样也允许该滚轮事件被外界接收，外界仍然可以 scroll down or scroll up.  
 如果想滚轮事件一直被吞掉，不管是否已经到了 scale 上下界，可以通过
 ```js
 selection.call(zoom).on('wheel', e => e.preventDefault())
@@ -70,10 +67,8 @@ selection.call(zoom).on('wheel', e => e.preventDefault())
 设置 translate bounding box [[x0,y0], [x1,y1]], 只能在该区域内进行平移操作
 
 ## zoom.on(typename[,listener])
-给指定 typename 事件注册 listener, 当指定事件发生时，会传给指定listener event, datum, index 作为参数，且 this 绑定到对应的 DOM element. 如果 listener 为 null, 会删除当前绑定的 listener.
-
-typenames 是一个可以包含多个(以空格间隔) typename 的字符串。 typename 的格式为 type.name, such as zoom.foo, type 只能是 one of [start, zoom, end], name 是自定义的名字。
-
+给指定 typename 事件注册 listener, 当指定事件发生时，会传给指定listener event, datum, index 作为参数，且 this 绑定到对应的 DOM element. 如果 listener 为 null, 会删除当前绑定的 listener.  
+typenames 是一个可以包含多个(以空格间隔) typename 的字符串。 typename 的格式为 type.name, such as zoom.foo, type 只能是 one of [start, zoom, end], name 是自定义的名字。  
 意味着通过自定义名字，可以为相同类型的事件定义多个不同的 listener
  * start, after zooming begins, such as mouse down
  * zoom, after a change to the zoom transform, such as mouse move
@@ -87,20 +82,16 @@ typenames 是一个可以包含多个(以空格间隔) typename 的字符串。 
  * event.sourceEvent, the underlying input event, such as mouse move
  
  # Zoom Transform <a name="zoom-transform"></a>
- Zoom behavior 将 zoom state 存储到 applied 的 element 上，而不是 存储到 zoom behavior 本身。
- 
- 这是因为 zoom behavior 可以 apply 多个不同的 element 上，每个element 可以有自己独立的 zoom state. zoom state 可以通过 user 交互或者 programmatically 来改变
- 
- 为了获取 element 上当前的 zoom state, 可以通过
+Zoom behavior 将 zoom state 存储到 applied 的 element 上，而不是 存储到 zoom behavior 本身。  
+这是因为 zoom behavior 可以 apply 多个不同的 element 上，每个element 可以有自己独立的 zoom state. zoom state 可以通过 user 交互或者 programmatically 来改变  
+为了获取 element 上当前的 zoom state, 可以通过
  1. event listener 中的 event.transform
  2. d3.zoomTransform(node)
  
- ## d3.zoomTransform(node)
- 返回当前指定节点的 zoom transform. 如果该节点没有定义 zoom, 则往上返回最近的祖先的 transform, 如果也没有，返回 d3.zoomIdentity.
- 
- note that the node should be DOM element instead of d3 selection, 因为 d3 selection could contain 多个 nodes, 不同 node 可能有不同的 zoom state, 而这个函数只返回 single transform.
- 
- 如果你有 d3 selection, call *selection.node()* first
+## d3.zoomTransform(node)
+返回当前指定节点的 zoom transform. 如果该节点没有定义 zoom, 则往上返回最近的祖先的 transform, 如果也没有，返回 d3.zoomIdentity.   
+note that the node should be DOM element instead of d3 selection, 因为 d3 selection could contain 多个 nodes, 不同 node 可能有不同的 zoom state, 而这个函数只返回 single transform.   
+如果你有 d3 selection, call *selection.node()* first
  ```js
 let transform = d3.zoomTransform(selection.node())
 ```
@@ -117,8 +108,7 @@ transform 对象具有以下属性
 * transform.y, the translation on y axis
 * transform.k, the scale factor
 
-这些属性应该被视作 read-only, 只通过相关的 api 来创建新的 zoom transform, such as transform.translate, transform.scale, zoom.scaleBy, zoom.translateTo
-
+这些属性应该被视作 read-only, 只通过相关的 api 来创建新的 zoom transform, such as transform.translate, transform.scale, zoom.scaleBy, zoom.translateTo  
 to create a transform with given x,y,k
 ```js
 let t = d3.zoomIdentity.translate(x, y).scale(k)
@@ -148,10 +138,8 @@ g.attr('transform', transform)//transform.toString()
 ## transform.invert(point)
 通过当前 transform 和指定 point 计算 responding inverse point, which is [(x-tx)/k, (y-ty)/k]
 ## transform.rescaleX(x)
-return a copy of the continuous scale x whose domain is transformed. 
-
-当 chart 包含坐标轴时，我们希望在 zoom 的时候，只 zoom chart 本身，坐标轴保持它的大小，改变的，只是坐标轴的尺度。
-
+return a copy of the continuous scale x whose domain is transformed.   
+当 chart 包含坐标轴时，我们希望在 zoom 的时候，只 zoom chart 本身，坐标轴保持它的大小，改变的，只是坐标轴的尺度。  
 所以，transform.rescaleX(x) 可以通过 transform 计算出当前 x 轴对应的 scale, 然后将 scale 的domain 进行更新
 ## transform.rescaleY(y)
 return a copy of the continuous scale y whose domain is transformed. 

@@ -1,5 +1,5 @@
 const width = 800
-const height = 600
+const height = 450
 const marginLeft = 30
 const marginBottom = 30
 const marginTop = 10
@@ -50,6 +50,7 @@ function drawCircles() {
     return scatter.selectAll('circle')
         .data(datas)
         //第一次绘制 circle 时，其 cx,cy,r 都为0， 所以表现形式都是从原点过渡到指定地点
+        //只有第一次 enter 时，enter.size() = 500, refresh 时，即使 datas 重新生成，但 circle 节点早已存在
         .join(enter => enter.append('circle').attr('r', 2).attr('fill', (_, i) => d3.interpolateRainbow(i / 360)))
             //在后续的绘制时，因为每一个 circle 可能已经经过了缩放，已经具有 transform 属性
             //在改变它 cx,cy 属性的同时，当前 transform 也会起作用，看起来，就是在当前坐标系下调整了点的位置
