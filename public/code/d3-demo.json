@@ -6,5 +6,6 @@
   "d3-axis",
   "d3-transition",
   "d3-zoom",
-  "d3-tile"
+  "d3-tile",
+  "d3-samples"
 ]
