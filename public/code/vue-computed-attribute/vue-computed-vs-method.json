@@ -1,0 +1,6 @@
+[
+  "https://unpkg.com/vue@2",
+  "https://unpkg.com/react/umd/react.development.js",
+  "https://unpkg.com/react-dom/umd/react-dom.development.js",
+  "https://unpkg.com/babel-standalone@6/babel.min.js"
+]

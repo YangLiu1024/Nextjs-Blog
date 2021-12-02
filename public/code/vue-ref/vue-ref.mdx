@@ -1,0 +1,7 @@
+# vue ref
+有的时候，尽管存在 prop 和事件，但是我们仍然需要在 JS code 中直接访问子组件，为此，可以在 Vue 里使用 <code>ref</code> attribute 为子组件或者 HTML 元素指定引用 ID.
+<CodePen html="/code/vue-ref/vue-ref.html" deps="/code/vue-ref/vue-ref.json" code="/code/vue-ref/vue-ref.js"/>
+需要注意的是，this.$refs 并不是响应式的，且它只会在组件渲染完成之后生效，我们应该避免在模板或者计算属性中访问 $refs, 它只能作为直接操作组件的最后手段。  
+
+在 React 里，它也有类似的功能
+<CodePen html="/code/vue-ref/vue-ref.html" deps="/code/vue-ref/vue-ref.json" code="/code/vue-ref/vue-ref-react.js" type="babel"/>

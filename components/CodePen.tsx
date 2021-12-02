@@ -54,8 +54,8 @@ export const CodePen = (props) => {
 
     return (
         <div ref={props.innerRef} style={{width: '100%', height: 600,  padding: 0, display: 'flex', 'flexDirection': 'row', overflow: 'hidden'}}>
-            <div style={{flex: '50%'}}>
-                <Tabs style={{width: '100%', height: '100%'}}>
+            <div style={{flex: '60%'}}>
+                <Tabs style={{width: '100%', height: '100%'}} defaultIndex={1}>
                     <TabList>
                         <Tab>HTML</Tab>
                         <Tab>JavaScript</Tab>
@@ -72,12 +72,12 @@ export const CodePen = (props) => {
                     </TabPanel>
                 </Tabs>
             </div>
-            <div style={{flex: '50%'}}>
+            <div style={{flex: '40%'}}>
                 <Previewer code={debounceValue.code || ''}
                            html={debounceValue.html || ''}
                            css={debounceValue.css || ''}
                            dependencies={(deps && JSON.parse(deps)) || []}
-                            type={'javascript'}/>
+                            type={props.type || 'javascript'}/>
             </div>
         </div>
     )

@@ -1,0 +1,13 @@
+# v-for
+v-for 是用来在模板中遍历数组，或者对象，或者一个整数，从而渲染出一组相似的组件.
+<CodePen html="/code/v-for/v-for.html" deps="/code/v-for/v-for.json" code="/code/v-for/v-for.js"/>
+
+* v-for 遍历数组的形式为 v-for="item in items", items 是数组数据对象，item 是数组元素的别名，还可以提供第二个可选参数 index, 表示元素索引，即 v-for="(item, index) in items"  
+* v-for 遍历对象的形式也是类似的，v-for="value in object", 也可以提供第二个参数 key, 即 v-for="(value, key) in object", 还可以提供第三个参数 index, 即 v-for="(value, key, index) in items". 其底层实现是通过 Object.keys() 来遍历的
+* v-for 还可以遍历整数， v-for="n in N", N 必须大于等于 0， n 会从 1 递增到 N
+
+为了更接近 JavaScript 迭代器的语法，也可以使用 <code>of</code> 替换 <code>in</code>.  
+如果渲染的内容包含多个元素，也可以使用 template tag 来包裹多个元素。  
+在 React 里，为了实现类似的功能，
+<CodePen html="/code/v-for/v-for.html" deps="/code/v-for/v-for.json" code="/code/v-for/v-for-react.js" type="babel"/>
+当 v-for 和 v-if 同时作用于相同元素时，首先，这个是不被推荐的，可以使用 template 元素来拆分开 v-for 和 v-if 指令. 但如果这样使用了，在 Vue2 里，v-for 的优先级更高，在 Vue3 里，v-if 的优先级更高

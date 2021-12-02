@@ -1,0 +1,47 @@
+# Vue Component
+组件是可复用的 Vue 实例，在前面的例子中，其实我们已经接触到很多的组件定义了。 组件和根实例的区别在于组件的 data 选项必须是函数，并且组件不支持 el 选项。  
+组件的注册有两种方式，全局注册和局部注册。前面的例子中，我们都是使用的局部注册，局部注册的组件只在当前作用域有效，而全局注册的组件，注册之后，就可以被任何新创建的根实例以及该实例的组件树的任意子组件直接使用。  
+```js
+//局部注册
+const Hello = {
+    template: `<button>Say Hi</button>`
+}
+//局部注册的组件在之后的使用中，必须先被声明
+new Vue({
+    template: `<Hello/>`,
+    components: {
+        Hello
+    }
+})
+//全局注册
+Vue.component('Hello', {
+   template: `<button>Say Hi</button>`
+})
+//而全局注册的组件则可以直接使用
+new Vue({
+    template: `<Hello/>`,
+})
+```
+除此之外，我们还讲到过，组件可以定义自己需要的参数，然后父组件通过 v-bind 将参数传递进来，但 Vue 组件不仅仅只能定义参数，还能对参数进行配置。
+```js
+//只声明了一个参数，该参数名为 count,但除了名字之外，一无所知
+{
+    props: ['count']
+}
+//Vue 提供了对参数 类型，默认值，是否为必需参数，参数值的验证功能
+{
+    props: {
+        count: {
+              type: Number,//要求 count 类型为 Number, 这里 type 可以是 JS 任意原生或者自定义的构造函数，Vue 会通过 instanceof 来判断，如果该参数可能有多个类型，可以用数组表示，比如 [Number, String]
+              required: true,
+              default: 0,//如果参数是对象或者数组类型，default 则必须为函数
+              validator: v => v >= 0
+        }       
+    }   
+}
+```
+如果参数验证不通过，则 Vue 会抛出警告
+<CodePen html="/code/vue-component/vue-component.html" deps="/code/vue-component/vue-component.json" code="/code/vue-component/vue-component-props.js"/>
+在 React 中, 其本身并没有对传入的参数做校验。  
+对于组件之间的通信，前面也已经讲过了，父组件通过 props 向子组件传递数据，子组件通过自定义事件触发父组件事件监听器。
+

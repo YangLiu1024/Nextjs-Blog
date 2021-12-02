@@ -1,0 +1,40 @@
+# v-slot
+slot 在 Vue 里面是插槽的意思，插槽的作用在于，有的时候，我们会希望组件外部能够更改组件内部的默认实现，或者说，组件本身就希望由外部来传入内容来填充组件本身，这就需要使用到 slot.
+<CodePen html="/code/v-slot/v-slot.html" deps="/code/v-slot/v-slot.json" code="/code/v-slot/v-slot.js"/>
+可以看到，组件 SubmitButton 的默认内容 Submit 被父组件传入的内容替换了。如果组件 SubmitButton 不提供 slot 元素，那么父组件传入的所有内容都将被丢弃。  
+在 React 里，它也有类似的功能。
+<CodePen html="/code/v-slot/v-slot.html" deps="/code/v-slot/v-slot.json" code="/code/v-slot/v-slot-react.js" type="babel"/>
+但除此之外，有的时候，我们需要多个插槽。
+
+```html
+<div class="container">
+  <header>
+    <!-- 我们希望把页头放这里 -->
+  </header>
+  <main>
+    <!-- 我们希望把主要内容放这里 -->
+  </main>
+  <footer>
+    <!-- 我们希望把页脚放这里 -->
+  </footer>
+</div>
+```
+对于这种情况，在 Vue 里，可以为 slot 元素指定名字 name, 实际上，如果没有显式指定名字，那么 slot 的名字为 <code>default</code>
+```html
+<!-- layout -->
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
+然后在父组件中，可以通过 template tag 加上 v-slot 指令来分发内容到子组件不同的插槽。没有被 template 和 v-slot 包裹的内容将被默认分发到 default slot.
+<CodePen html="/code/v-slot/v-slot.html" deps="/code/v-slot/v-slot.json" code="/code/v-slot/v-slot-name.js"/>
+Vue 为 v-slot 也提供了缩写 <code>'#'</code>  
+在 React 中，就不具备指定位置分发内容的功能，它只能通过 <code>props.children</code> 来一次性处理所有传入的内容

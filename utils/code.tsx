@@ -1,8 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import remark from 'remark'
-import html from 'remark-html'
 import {serialize} from "next-mdx-remote/serialize";
 
 const codeFolder = path.join(process.cwd(), 'public', 'code')
@@ -10,6 +8,10 @@ const codeFolder = path.join(process.cwd(), 'public', 'code')
 
 export function getAllCodeTopics() {
     return JSON.parse(fs.readFileSync(path.join(codeFolder, 'd3-demo.json')).toString())
+}
+
+export function getAllVueTopics() {
+    return JSON.parse(fs.readFileSync(path.join(codeFolder, 'vue-topics.json')).toString())
 }
 
 export async function getCodeTopic(topic) {

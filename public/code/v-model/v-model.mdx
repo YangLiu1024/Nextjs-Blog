@@ -1,0 +1,37 @@
+# v-model
+v-model 是 Vue 提供用来实现数据和组件双向绑定的，使用起来也特别简单
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/v-model-input.js"/>
+v-model 看起来神奇，其实也就是 v-bind 和 v-on  结合起来使用的语法糖  
+
+```html
+<input v-model="msg"/>
+<!-- equals to -->
+<input v-bind:value="msg" @input="($event) => msg = $event.target.value"/>
+```
+ v-bind 绑定组件的 value 属性，v-on 监听组件触发的 input 事件，其回调函数则是将子组件传递的值用来更新绑定的数据对象 
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/v-model-component.js"/>
+但在很多场景下，组件并不具有 value 属性，input 事件也可能被其它事件使用，这种情况下，Vue 提供了 model 选项来进行配置。
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/v-model-component-custom.js"/>
+在 React 里，并没有提供组件之间双向绑定的快捷方式，必须通过父组件，将状态和更改函数一起传递给子组件.  
+
+# 思考
+有的场景下，数据的改变可能很快，但我们只需要最后的值，这就需要我们实现一个 debounce 的功能。在 React 课程里，我们已经学习过怎么使用 <code>useEffect</code> 来实现 useDebounce, 那么在 Vue 里，我们又该怎么做呢？
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/vue-debounce-simple.js"/>
+上例中, 我们已经让文本的输入有了 500ms 的延迟，更进一步的话，我们怎么把这个功能提取出来，让其它地方都可以使用呢？
+
+```js
+//debounce.js
+function debounce(fn, delay) {
+    var timeoutId;
+    return function() {
+        if (timeoutId) clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => fn.apply(this, arguments), delay)
+    }
+}
+```
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/vue-debounce.js"/>
+但是上面的代码还有一些隐患，因为组件的 methods 函数本身其实是被所有组件实例共享的，只是调用这些methods 的组件实例，即 <code>this</code> 不同，这个概念就和 Java 里类里成员函数是被所有类对象共享类似。   
+所以当不同组件，在 delay 时间内都调用该 methods, 那么只有最后一次会生效
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/vue-debounce-method.js"/>
+为了解决上述隐患，那么我们可以把 debounce 之后的函数设置为实例私有，而不是所有实例共享
+<CodePen html="/code/v-model/v-model.html" deps="/code/v-model/v-model.json" code="/code/v-model/vue-debounce-private-method.js"/>

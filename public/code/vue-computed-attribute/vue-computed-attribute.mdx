@@ -1,0 +1,88 @@
+# Vue 计算属性
+有的时候，我们在 data 数据对象里已经定义了一些基础数据，但是我们真正使用的是这些数据的组合或者映射，并且，我们希望在基础数据改变的时候，通过这些数据组合出来的值也可以实时更新。  
+我们可以直接在模板里使用插值表达式来完成这一功能，但是这会让模板不再是简单的和声明性的，必须先看一下它的逻辑，才能意识到它的逻辑。如果该表达式使用多次，问题将会变得更糟糕。  
+所以，对于任何包含响应式数据的复杂逻辑，就可以使用 Vue 计算属性。  
+
+## 使用插值表达式
+```js
+new Vue({
+    template: `
+        <div>
+            {{lastName + ' ' + firstName}}
+        </div>      
+    `,
+    data: {
+        firstName: "yang",
+        lastName: "liu" 
+    }
+})
+```
+把逻辑写在模板里，减少了模板的简单性和声明性
+## 使用计算属性
+```js
+new Vue({
+    template: `
+        <div>
+            {{fullName}}
+        </div>      
+    `,
+    data: {
+        firstName: "yang",
+        lastName: "liu" 
+    },
+    computed: {
+        fullName() {
+            return this.lastName + ' ' + this.firstName;
+        }   
+    }
+})
+```
+使用计算属性后，模板变得简洁许多。那么有人可能就要问了，这个 fullName 不就是一个 method 吗，我可以直接定义一个method, 也可以完成同样的功能啊？
+## 计算属性 vs 方法
+```js
+new Vue({
+    template: `
+        <div>
+            {{fullName()}}
+        </div>      
+    `,
+    data: {
+        firstName: "yang",
+        lastName: "liu" 
+    },
+    methods: {
+        fullName() {
+            return this.lastName + ' ' + this.firstName;
+        }   
+    }
+})
+```
+是的，如果使用方法，而不是计算属性，也可以达到完全一样的效果，不同点在于，计算属性将基于它的依赖进行缓存，只有在依赖改变时，才会重新计算，如果依赖没有改变，访问计算属性将会立即返回缓存值。  
+而对于方法，如果页面重新渲染，它总是会被重新执行一次。
+<CodePen html="/code/vue-computed-attribute/vue-computed-vs-method.html" deps="/code/vue-computed-attribute/vue-computed-vs-method.json" code="/code/vue-computed-attribute/vue-computed-vs-method.js"/>
+同样的，在　React 里，为了实现类似的效果，可以使用 useMemo hook
+<CodePen html="/code/vue-computed-attribute/vue-computed-vs-method.html" deps="/code/vue-computed-attribute/vue-computed-vs-method.json" code="/code/vue-computed-attribute/vue-computed-attribute-react.js" type="babel"/>
+
+## 计算属性 setter
+计算属性除了可以有 getter, 还可以设置 setter, 这个是 React.useMemo 不能提供的
+```js
+new Vue({
+    data: {
+        firstName: "yang",
+        lastName: "liu" 
+    },
+    computed: {
+        fullName: {
+            get() {
+                return this.lastName + ' ' + this.firstName;
+            },
+            set(fullName) {
+                let names = fullName.split(' ')
+                this.firstName = names[0]
+                this.lastName = names[names.length - 1]
+            }    
+        }   
+    }
+})
+```
+

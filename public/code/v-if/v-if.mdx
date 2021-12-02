@@ -1,0 +1,12 @@
+# v-if
+v-if 指令用于条件性的渲染一块内容，这块内容只会在指令的表达式的值为 truthy 时才会被渲染。
+<CodePen html="/code/v-if/v-if.html" deps="/code/v-if/v-if.json" code="/code/v-if/v-if.js"/>
+除了 v-if, 还有 v-else, v-else-if, 但需要注意的是 v-else 和 v-else-if 都必须紧跟在 v-if 或者 v-else-if 之后。  
+有的情况下，该指令不仅作用于单个元素，那该怎么办呢？ Vue 提供了template tag, 它并不会真正渲染成什么 DOM 元素，但是可以把它用作容器元素。这个就和 React 的 Fragment 是一样的功能。  
+<CodePen html="/code/v-if/v-if.html" deps="/code/v-if/v-if.json" code="/code/v-if/v-if-template.js"/>
+需要注意的是，Vue 会尽可能高效的渲染元素，通常会复用已有元素，而不是从头开始渲染
+<CodePen html="/code/v-if/v-if.html" deps="/code/v-if/v-if.json" code="/code/v-if/v-if-reuse.js"/>
+如果这个行为不是你想要的，该怎么避免呢？给可能被复用的元素添加 unique key 属性。这个就和 React 非常类似了。
+<CodePen html="/code/v-if/v-if.html" deps="/code/v-if/v-if.json" code="/code/v-if/v-if-react.js" type="babel"/>
+除了 v-if 之外，Vue 还提供了一个非常类似的指令 v-show, 它们的区别在于，v-show 绑定的元素不管表达式是否为真值，它的内容总是会被渲染的，只是通过 CSS 属性 display:none 来隐藏。  
+但是 v-if 会根据条件来判断是否需要渲染绑定的元素内容。

@@ -1,0 +1,41 @@
+# Vue 单文件组件
+在前面的所有实例中，我们都是通过 Vue.component 定义全局组件，或者定义局部组件，以及通过 new Vue({}) 来创建 Vue 应用，这种方式在小规模项目中运作的很好，但在更复杂的项目中，如果前端完全由 JavaScript 驱动，下面这些缺点将非常明显：
+* 全局定义，强制要求每个组件的命名不能重复
+* 字符串模板，在字符串里编写模板，缺少语法高亮，在模板有多行时，编写起来比较麻烦
+* 不支持 CSS
+* 没有构建步骤
+
+为了解决上述问题，Vue 提供了单文件组件(以 .vue 结尾的文件)，并且可以使用 webpack 等构建工具
+```js
+<template>
+    <button>Click</button>
+</template>
+<script>
+import ComponentA from './componentA.vue'
+export default {
+    data() {
+        return {}
+    },
+    components: {
+        ComponentA
+    }
+   
+}
+</script>
+
+<style scoped>
+button {
+    border: 1px solid
+}
+</style>
+```
+下面可以通过一个基础的 Vue 工程来了解单文件组件是什么样的
+<iframe width="100%" height="800" src="https://codesandbox.io/s/great-architecture-fi5nx?file=/src/main.js"/>
+通过单文件组件，我们将组件模板，组件逻辑，和组件 CSS 定义分开，让关注点分离。与其让代码库划分为三个相互交织的巨大层，不如将它们划分为松散耦合的组件并进行组合更有意义。  
+在组件内部，它的模板，逻辑和样式是内在耦合的，将它们搭配起来实际上可以使组件更具有凝聚力和可维护性。  
+
+虽然使用单文件组件需要构建步骤，但是它的好处也是颇多：
+* 使用熟悉的 HTML, CSS, JavaScript 语法编写模块化组件
+* 组件作用域 CSS
+* IDE 支持模板表达式的自动补全和类型检查
+* 开箱即用的热加载

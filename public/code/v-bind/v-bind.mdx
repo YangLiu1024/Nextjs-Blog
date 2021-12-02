@@ -1,0 +1,53 @@
+ # v-bind
+v-bind 用于动态的绑定组件自定义参数或者原生元素属性到表达式，参数为绑定的属性名，值为对应的表达式。  
+因为 v-bind 属于使用频率很高的指令，Vue 为它指定了缩写 <code>':'</code>
+```js
+new Vue({
+    template: `
+        <a v-bind:href="link" target="blank"></a>
+    `,
+    data: {
+        link: "https://www.google.com"
+    }
+})
+```
+从上例看出，我们将链接 a 的 href 属性绑定到了数据对象 link 上，这样当 link 的值发生改变时，a 的 href 属性也将同步更新。  
+但是如果我们不使用 v-bind, 而是直接写成
+```js
+new Vue({
+    template: `
+        <a href="link" target="blank"></a>
+    `,
+    data: {
+        link: "https://www.google.com"
+    }
+})
+```
+那么 href 将设置为静态字符串 "link", 而不是数据对象 link. Vue 会把 v-bind 后的表达式当作 JS 表达式，而不是字符串。这个和 React 里面绑定数据的花括号类似
+```js
+const App = () => {
+    const [link, setLink] = React.useState("https://www.google.com")
+    
+    return (
+        <a href={link} target="_blank"></a>
+    )
+}
+```
+如果不使用花括号, 那么 a 的 href 也将设置为静态字符串 link, 而不是 state link, 从而导致错误的行为
+```js
+const App = () => {
+    const [link, setLink] = React.useState("https://www.google.com")
+    
+    return (
+        <a href="link" target="_blank"></a>
+    )
+}
+```
+v-bind 的作用在于将元素或组件的指定属性的值和指定表达式的值绑定在一起，但这个绑定是单向的，数据是从父组件流向子组件的，子组件是不应该去修改该属性的，如果修改了，Vue 也会给出 warning, 如果父组件重新渲染，子组件的更改也会被丢弃。
+<CodePen html="/code/v-bind/v-bind.html" deps="/code/v-bind/v-bind.json" code="/code/v-bind/v-bind-uni-direction.js"/>
+但是 React 里面，对于受控状态的管理有点不一样，它完全不允许子组件直接修改传递过来的参数。 如果子组件想要修改参数，只能使用父组件传递下来的更新函数。
+<CodePen html="/code/v-bind/v-bind.html" deps="/code/v-bind/v-bind.json" code="/code/v-bind/v-bind-uni-direction-react.js" type="babel"/>
+在 Vue 里面，Vue 提供了便捷的指令 v-model 来直接实现双向数据绑定，这个在之后会介绍。
+
+
+

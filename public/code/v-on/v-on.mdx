@@ -1,0 +1,14 @@
+# v-on
+v-on 用于注册事件监听器，其参数为事件名，值为回调函数。 v-on 可以作用于原生 DOM 元素，也可以作用于自定义组件。它的缩写为 <code>'@'</code>  
+用在原生元素上时，只能监听原生 DOM 事件，且回调函数的默认参数为事件 $event, 用在组件上时，也可以监听子组件触发的自定义事件, 其回调函数的参数为子组件 emit 的参数。  
+还可以为事件监听器添加修饰符，比如
+* .stop, 会默认调用 $event.stopPropagation()
+* .prevent, 会默认调用 $event.preventDefault()
+* .self, 只当事件在监听器绑定的元素本身触发时，才触发回调
+* .{keyCode | keyAlias}, 只当事件是从特定按键触发时才触发回调
+* .once, 回调只触发一次
+
+<CodePen html="/code/v-on/vue-directive-v-on.html" deps="/code/v-on/vue-directive.json" code="/code/v-on/vue-directive-v-on.js"/>
+
+v-on 用在组件上时, 还可以监听子组件自定义事件，从而实现父组件和子组件之间的通信
+<CodePen html="/code/v-on/vue-directive-v-on.html" deps="/code/v-on/vue-directive.json" code="/code/v-on/v-on-component.js"/>
