@@ -6,9 +6,9 @@ import {MDXRemote} from "next-mdx-remote";
 import Link from "next/link";
 
 export default function Topic({source, frontMatter}) {
-    function getName(path) {
-        let names = path.split('/')
-        return names[names.length - 1]
+    function getName(path, index = 0) {
+        let names = path.split('/').filter(s => s)
+        return names.length > index ? names[index] : names[0]
     }
     return <div style={{margin: "20px 20px 20px 20px"}}>
         {/*<ScrollBottom innerRef={codePen}/>*/}
@@ -21,8 +21,9 @@ export default function Topic({source, frontMatter}) {
             <MDXRemote {...source} components={{CodePen}}></MDXRemote>
         </article>
         <div style={{border: "1px solid steelblue", width: "100%", display:"flex", justifyContent:"space-between"}}>
-            {frontMatter.pre && <Link href={frontMatter.pre}><a>{"<<"} {getName(frontMatter.pre)}</a></Link>}
-            {frontMatter.next && <Link href={frontMatter.next}><a>{getName(frontMatter.next)} {">>"}</a></Link>}
+            {frontMatter.pre && <Link href={frontMatter.pre}><a>{"<<"} {getName(frontMatter.pre, 1)}</a></Link>}
+            {frontMatter.pre && <Link href={'/' + getName(frontMatter.pre)}><a>{"<<"} {getName(frontMatter.pre)} {">>"}</a></Link>}
+            {frontMatter.next && <Link href={frontMatter.next}><a>{getName(frontMatter.next, 1)} {">>"}</a></Link>}
         </div>
     </div>
 }
