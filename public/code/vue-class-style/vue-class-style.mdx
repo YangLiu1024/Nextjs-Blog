@@ -1,0 +1,17 @@
+---
+pre: /vue/v-bind
+parent: /vue
+next: /vue/v-on
+---
+# Class 与 Style 绑定
+操作元素的 class 列表和内联样式是数据绑定的常见需求，因为它们都是 attribute, 我们可以使用 v-bind 处理，但是字符串拼接麻烦且易错。  
+所以 Vue 在 b-bind 作用于 class 和 style 时，专门做了增强，表达式的结果除了可以是字符串之外，还可以是对象和数组。
+<CodePen html="/code/vue-class-style/vue-class-style.html" deps="/code/vue-class-style/vue-class-style.json" code="/code/vue-class-style/vue-class-style.js" css="/code/vue-class-style/vue-class-style.css"/>
+可以看到，<code>:class</code> 可以和普通 <code>class</code> 属性共存，而且不建议在模板里内联定义 class 和 style 对象，特别是在条件判断表达式比较复杂的时候，建议使用 计算属性返回 class 或者 style 对象。  
+至于数组语法，对于 class 绑定，数组的每一个元素都是JS 表达式，可以是静态字符串，数据变量，或者 class 对象。表达式的值将作为 class 添加。  
+对于 style 绑定，数组的每个元素都只能是样式对象， 因为 style 需要 key-value pair.  
+注意 class 和 style 的一个区别，对于 class 对象，它的 key 是 class name, 其 value 是 truthy 表达式，当表达式为真时，添加该 key 作为 class.  
+对于 style 对象，其 key 是 style 属性名，其 value 是 JS 表达式，JS 表达式的值是属性的值。  
+
+在 React 里，如果想要实现类似的功能
+<CodePen html="/code/vue-class-style/vue-class-style.html" deps="/code/vue-class-style/vue-class-style.json" code="/code/vue-class-style/vue-class-style-react.js" css="/code/vue-class-style/vue-class-style.css" type="babel"/>

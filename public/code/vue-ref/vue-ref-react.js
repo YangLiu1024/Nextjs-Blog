@@ -10,9 +10,7 @@ const App = () => {
     React.useEffect(() => focusInput(), [])
 
     function focusInput() {
-        if (iref.current) {
-            iref.current.focus()
-        }
+        iref.current?.focus()
     }
 
     return (

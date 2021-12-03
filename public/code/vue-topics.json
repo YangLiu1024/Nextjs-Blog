@@ -3,6 +3,7 @@
   "vue-instance",
   "vue-computed-attribute",
   "v-bind",
+  "vue-class-style",
   "v-on",
   "v-model",
   "v-if",

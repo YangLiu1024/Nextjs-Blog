@@ -1,0 +1,12 @@
+.active {
+    background-color: lightskyblue;
+}
+
+.text-danger {
+    color: red;
+}
+
+.static {
+    width: 50%;
+    height: 50px
+}
