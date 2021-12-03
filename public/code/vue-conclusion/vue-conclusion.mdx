@@ -1,3 +1,7 @@
+---
+pre: /vue/vue-single-file
+next: /vue/vue-practice
+---
 # 小结
 经过前面的学习，我们学习了 Vue 的一些基础内容，包括
 * Vue instance
@@ -8,8 +12,50 @@
 * v-model
 * v-if
 * v-for
+* vue ref
 * Vue component
 * Vue slot & v-slot
 * Vue single file component
 
-除此之外，Vue 当然还提供了很多其它更为强大的功能，比如过渡 & 动画，渲染函数 & JSX, 自定义指令，Mixin, 
+除此之外，Vue 当然还提供了很多其它更为强大的功能，比如过渡 & 动画，渲染函数 & JSX, 自定义指令，Mixin 等等。  
+# 对比 React
+Vue 和 React 有许多相似之处，
+* 都使用 virtual DOM
+* 都提供响应式和组件化的视图组件
+* 将注意力集中在核心库，而将其它功能，比如路由，和全局状态管理交给其它相关的库来完成
+
+因为我 Vue 和 React 都使用过，可以聊聊我的一些个人看法
+## 单文件组件
+在 React 里，一切都是 JavaScript, 不仅仅是 HTML 可以用 JSX 来表达，现在的潮流也越来越多的将 CSS 也纳入到 JavaScript 中处理。这类方案有其优点，但也不是所有人都接受。  
+React 通过 JSX 来渲染组件，有其优势：
+* 可以使用完整的 JavaScript 功能来构建视图页面
+* IDE　对 JSX 的支持也是先进的
+
+但事实上，Vue 也提供了 渲染函数 render, 也支持 JSX, 但 Vue 仍然推荐使用模板。它也有一些优势：
+* 对于习惯了 HTML 的开发者来说，模板比 JSX 读写起来更自然，也使得新人开发者更容易理解，比如不需要理解 loops, ternary
+* 任何 合法的 HTML 都是合法的模板，这样使得迁移已有的应用到 Vue 更为容易
+* 模板可以不仅仅是 HTML 语言，还可以是其它模板，比如 Jade, Pug 等等，只要 vue-loader 配置对应的预处理器，那么就可以渲染出正确的内容
+
+所以，Vue 给了开发者选择的权力，但 React 没有。  
+对于 CSS, React 是通过 CSS Modules, 或者使用 CSS-in-JS 的方案来实现的，比如 styled-components.  
+Vue 当然也支持这样做，但是更推荐直接使用单文件组件内的 style, 如果想要样式是组件作用域，简单的加上 scoped 属性即可   
+同样的，Vue 单文件组件内的 style 也支持多种语言，只需要配置相应的预处理器。  
+
+单文件组件将 HTML, CSS, JavaScript 结合在一个文件， 不需要切换多个文件，且组件的内在逻辑和样式更为聚合。
+## API
+* Vue 提供了大量简单易懂的内置指令，这些指令也让组件模板条理更为清晰明了，比如 v-model, v-if, v-for, v-on 等等。当组件内容比较大时，HTML 形式的模板肯定比一大段 JSX 要更为清晰易读。  
+* Vue 组件也可以校验传递进来的参数，如果校验不通过，会在控制台输出警告，但是 React 本身并不提供这种功能。  
+* 在更新数据时， Vue 可以直接更改数据的值，但是 React 必须通过 setState 或者 useState 返回的更新函数来更新数据，并且 Vue 可以自动检测数据是否真正发生了变化，只在数据变化时，才重新渲染需要渲染的地方，但 React class component 在 setState 调用后，总是会重新渲染  
+* Vue 本身提供过渡和动画支持，且易于使用和拓展，但 React 只能依赖于三方库。  
+* Vue 父子组件通信，父传子通过 props, 子传父通过事件，但 React 只支持父传子。  
+* 除了 props 和 events, 当需要操作特定组件时，Vue 和 React 都提供了 ref, 但是 Vue 还提供了自定义指令，可以完成很多奇妙的功能。  
+* Vue 对组件 class/style 绑定作出了一定的优化，使用起来相对 React 来说更为简单便捷。  
+## 组件渲染
+在 React 中，如果某个组件的状态发生变化，它会以该组件为根，重新渲染整个组件子树，这就可能导致子组件的不必要渲染。  
+在 Class React 时期，开发者需要使用 PureComponent 或者手动实现 shouldComponentUpdate 来避免不必要的渲染，这就带来了额外的心智负担。 在 Functional Component 时期，React 在底层做了一定的优化来减少重新渲染的消耗。  
+在 Vue　里，组件的依赖是在渲染过程中自动跟踪的，所以系统能够精确的知道哪个组件确实需要被重新渲染。你可以理解为　Vue 每一个组件都正确实现了 shouldComponentUpdate
+
+## 社区
+React 把很多功能交给社区维护，因此创建了一个更分散，但是也更繁荣的生态系统。Vue 的路由和状态管理库都是官方维护支持且和核心库同步更新的。  
+在创建项目时，React 提供了 create-react-app, Vue 了提供了 vue-cli 脚手架。  
+至于学习曲线，React 在上手时，就需要了解 JSX, ES5, 以及构建系统，但 Vue　不需要这些，只需要不到一天的时间阅读指南就可以建立简单的应用程序。

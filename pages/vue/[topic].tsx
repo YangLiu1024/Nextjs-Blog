@@ -3,9 +3,14 @@ import { GetStaticProps, GetStaticPaths } from 'next'
 import { CodePen } from '../../components/CodePen';
 import * as React from "react";
 import {MDXRemote} from "next-mdx-remote";
+import Link from "next/link";
 
 export default function Topic({source, frontMatter}) {
-    return <div style={{margin: "20px 0 20px 20px"}}>
+    function getName(path) {
+        let names = path.split('/')
+        return names[names.length - 1]
+    }
+    return <div style={{margin: "20px 20px 20px 20px"}}>
         {/*<ScrollBottom innerRef={codePen}/>*/}
         {/*<CodePen innerRef={codePen} {...code}/>*/}
         {/*<article>*/}
@@ -15,6 +20,10 @@ export default function Topic({source, frontMatter}) {
         <article>
             <MDXRemote {...source} components={{CodePen}}></MDXRemote>
         </article>
+        <div style={{border: "1px solid steelblue", width: "100%", display:"flex", justifyContent:"space-between"}}>
+            {frontMatter.pre && <Link href={frontMatter.pre}><a>{"<<"} {getName(frontMatter.pre)}</a></Link>}
+            {frontMatter.next && <Link href={frontMatter.next}><a>{getName(frontMatter.next)} {">>"}</a></Link>}
+        </div>
     </div>
 }
 

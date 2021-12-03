@@ -20,6 +20,9 @@ export default function Home() {
           <li className={utilStyles.listItem} key={"d3-demo"}>
             <Link href={"/d3-demo"}><a>{"d3-demo"}</a></Link>
           </li>
+            <li className={utilStyles.listItem} key={"vue"}>
+                <Link href={"/vue"}><a>{"vue"}</a></Link>
+            </li>
         </ul>
       </section>
     </Layout>
